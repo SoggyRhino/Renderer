@@ -1,0 +1,21 @@
+Work Breakdown:
+
+- [x] Project structure and basic window management 2 hours
+- [ ] Initial rendering and physics setup (cube + gravity) 4 hours
+-  [ ] Object Loading + Rendering (GLTF) 4 hours
+-  [ ] Solid Body Rendering
+    -  [ ] Lighting (Blinn-Phong) 1 hour
+    -  [ ] Scene Light Sources Management 2 hours
+    -  [ ] Object Materials (texture + normal maps + etc) 4 hours
+    -  [ ] Cube Map 1 hour
+-  [ ] Fluid Simulation
+    -  [ ] Setup basic particles and link to physics engine 4 hours
+    -  [ ] Initial Shaders (Render as spheres) 4 hours
+    -  [ ] Complete Shaders 16 hours
+        -  [ ] Gaussian blur
+        -  [ ] Bilateral Filtering
+        -  [ ] Transparency and Shadows
+-  [ ] Fluid + solid body physics 8 hours
+-  [ ] UI Controls (Imgui) + Ray cast object selection 4 hours
+-  [ ] General improvements to code quality and performance 6 hours
+-  [ ] Setup demo scenes for presentation 2 hours
