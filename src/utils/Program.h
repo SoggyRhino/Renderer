@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include <glad/glad.h>
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 
 class Program {
 public:

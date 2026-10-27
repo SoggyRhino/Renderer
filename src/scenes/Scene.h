@@ -7,4 +7,5 @@ public:
 
     virtual void update(double dt) = 0;
     virtual void render() const = 0;
+    virtual void renderUI() = 0;
 };

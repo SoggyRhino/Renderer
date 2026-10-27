@@ -1,16 +1,13 @@
-//
-// Created by Ian on 10/26/2026.
-//
-
-#include "SquareTestScene.h"
+#include <imgui.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Paths.h"
-#include "../utils/Buffers.h"
-
+#include "utils/Buffers.h"
+#include "SquareTestScene.h"
 
 SquareTestScene::SquareTestScene()
     : program(VERTEX_SHADER_2D, FRAGMENT_SHADER_2D), VAO(genVertexArray()), VBO(genBuffer()) {
-    const float vertices[] = {
+    constexpr float vertices[] = {
         -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
         0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
@@ -40,12 +37,36 @@ SquareTestScene::~SquareTestScene() {
 }
 
 void SquareTestScene::update(double dt) {
+    if (!pause) {
+        currentAngle += speed * static_cast<float>(dt);
+
+        currentAngle = std::fmod(currentAngle, 360.0f);
+
+        rotationMatrix = glm::rotate(
+            glm::mat4(1.0f),
+            glm::radians(currentAngle),
+            glm::vec3(0.0f, 0.0f, 1.0f)
+        );
+    }
 }
 
 void SquareTestScene::render() const {
     this->program.use();
 
+    program.setMatx4fv("uRotation", rotationMatrix);
+
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+}
+
+void SquareTestScene::renderUI() {
+    ImVec2 topLeft = ImGui::GetMainViewport()->Pos;
+    ImGui::SetNextWindowPos(topLeft, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+
+    ImGui::Begin("Square Test Settings");
+    ImGui::SliderFloat("Speed", &speed, 0.0f, 360.0f);
+    ImGui::Checkbox("Pause", &pause);
+    ImGui::End();
 }

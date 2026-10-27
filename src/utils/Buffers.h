@@ -1,6 +1,6 @@
 #pragma once
-#include "glad/glad.h"
 
+#include <glad/glad.h>
 
 inline GLuint genVertexArray() {
     GLuint id = 0;
