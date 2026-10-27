@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Statistic">
+    <option name="fileTypesIncluded" value="h;cpp;c;glsl;" />
+    <option name="separateTabsFileTypes" value="java;xml;css;html;js;properties;jsp;glsl;txt;h;cpp;c;php;php4;php5;phtml;inc;py;vue;kt" />
+    <option name="excludedDirectories">
+      <list>
+        <option value="$PROJECT_DIR$/cmake-build-debug" />
+        <option value="$PROJECT_DIR$/lib" />
+      </list>
+    </option>
+  </component>
+</project>

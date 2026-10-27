@@ -14,13 +14,15 @@ public:
 
     void update() const;
 
-    void clear() const;
+    void clear();
+
+    [[nodiscard]] bool shouldClose() const;
 
 private:
     static constexpr auto clear_color = glm::vec4(0.2f, 0.3f, 0.3f, 1.0f);
-    const std::string title{};
-    int height{};
-    int width{};
+    const std::string title;
+    int width;
+    int height;
 
     GLFWwindow *window{};
 };

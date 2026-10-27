@@ -1,8 +1,9 @@
 #include "Window.h"
 #include <stdexcept>
+#include <utility>
 
 
-Window::Window(std::string title, int height, int width) : title(title), height(height), width(width) {
+Window::Window(std::string title, int width, int height): title(std::move(title)), width(width), height(height) {
     if (!glfwInit()) {
         throw std::runtime_error("Could not init GLFW");
     }
@@ -14,7 +15,6 @@ Window::Window(std::string title, int height, int width) : title(title), height(
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, 1);
-    //glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
     glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
     window = glfwCreateWindow(width, height, this->title.c_str(), nullptr, nullptr);
@@ -28,17 +28,14 @@ Window::Window(std::string title, int height, int width) : title(title), height(
         glViewport(0, 0, w, h);
     });
     gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
-    //glDisable(GL_CULL_FACE);
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 
     glfwShowWindow(window);
 }
-
 
 
 Window::~Window() {
@@ -51,6 +48,10 @@ void Window::update() const {
     glfwPollEvents();
 }
 
-void Window::clear() const {
+inline void Window::clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+inline bool Window::shouldClose() const {
+    return glfwWindowShouldClose(window);
 }

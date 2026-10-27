@@ -57,8 +57,16 @@ target_include_directories(stb_image INTERFACE
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/Window.cpp
-        src/Window.h
+        src/utils/Window.cpp
+        src/utils/Window.h
+        src/utils/Program.cpp
+        src/utils/Program.h
+        src/scenes/Scene.cpp
+        src/scenes/Scene.h
+        src/scenes/SquareTestScene.cpp
+        src/scenes/SquareTestScene.h
+        src/Paths.h
+        src/utils/Buffers.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
