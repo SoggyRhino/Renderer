@@ -97,12 +97,20 @@ add_executable(${PROJECT_NAME}
         src/scenes/SquareTestScene.h
         src/Paths.h
         src/utils/Buffers.h
+        src/scenes/GLTFTestScene.cpp
+        src/scenes/GLTFTestScene.h
+
+
+        lib/tiny_gltf_v3.c
+        src/utils/model.cpp
+        src/utils/model.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/lib
 )
+target_compile_definitions(${PROJECT_NAME} PRIVATE TINYGLTF3_ENABLE_FS)
 
 find_package(OpenGL REQUIRED)
 
@@ -115,14 +123,23 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         imgui
 )
 
+# --- ASSET COPYING ---
 set(SHADERS_DIR ${CMAKE_SOURCE_DIR}/shaders)
+set(MODELS_DIR ${CMAKE_SOURCE_DIR}/models)
 
-add_custom_target(copy_shaders ALL
+add_custom_target(copy_assets ALL
+        # Copy Shaders
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADERS_DIR} $<TARGET_FILE_DIR:${PROJECT_NAME}>/shaders
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADERS_DIR} ${CMAKE_BINARY_DIR}/shaders
-        COMMENT "Copying shaders to target output directory"
+
+        # Copy Models
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${MODELS_DIR} $<TARGET_FILE_DIR:${PROJECT_NAME}>/models
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${MODELS_DIR} ${CMAKE_BINARY_DIR}/models
+
+        COMMENT "Copying shaders and models to target output directory"
 )
-add_dependencies(${PROJECT_NAME} copy_shaders)
+
+add_dependencies(${PROJECT_NAME} copy_assets)
 
 if(MINGW)
     get_filename_component(MINGW_BIN_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)

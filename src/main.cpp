@@ -1,11 +1,12 @@
 #include <thread>
 
+#include "scenes/GLTFTestScene.h"
 #include "scenes/SquareTestScene.h"
 #include "utils/Window.h"
 
 int main(int argc, const char *argv[]) {
     Window window{};
-    SquareTestScene scene{};
+    GLTFTestScene scene{"models/fish/BarramundiFish.gltf"};
 
     double lastFrame = 0.0f;
 

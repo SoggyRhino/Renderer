@@ -6,9 +6,9 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <format>
 
-Window::Window(std::string title, int width, int height): title(std::move(title)), width(width), height(height) {
+Window::Window(std::string title, int width, int height) : title(std::move(title)), width(width), height(height) {
     if (!glfwInit()) {
-        const char* description = nullptr;
+        const char *description = nullptr;
         int errorCode = glfwGetError(&description);
 
         throw std::runtime_error(std::format(
@@ -19,7 +19,7 @@ Window::Window(std::string title, int width, int height): title(std::move(title)
     }
 
     glfwSetErrorCallback([](int error, const char *description) {
-        printf("Error: %s\n", description);
+        printf("Error %d: %s\n", error, description);
     });
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -31,7 +31,7 @@ Window::Window(std::string title, int width, int height): title(std::move(title)
     window = glfwCreateWindow(width, height, this->title.c_str(), nullptr, nullptr);
 
     if (!window) {
-        const char* description = nullptr;
+        const char *description = nullptr;
         int errorCode = glfwGetError(&description);
 
         throw std::runtime_error(std::format(

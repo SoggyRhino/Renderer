@@ -2,7 +2,7 @@ Work Breakdown:
 
 - [x] Project structure and basic window management 2 hours
 - [ ] Initial rendering and physics setup (cube + gravity) 4 hours
--  [ ] Object Loading + Rendering (GLTF) 4 hours
+-  [x] Object Loading + Rendering (GLTF) 4 hours
 -  [ ] Solid Body Rendering
     -  [ ] Lighting (Blinn-Phong) 1 hour
     -  [ ] Scene Light Sources Management 2 hours
