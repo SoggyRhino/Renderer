@@ -1,7 +1,9 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 #include <glad/glad.h>
+#include "utils/Buffers.h"
 
 struct tg3_model;
 struct tg3_primitive;
@@ -9,24 +11,24 @@ struct tg3_primitive;
 class Mesh {
 public:
     Mesh(const tg3_model &model, const tg3_primitive &prim);
-    ~Mesh();
+    ~Mesh() = default;
 
     Mesh(const Mesh &) = delete;
     Mesh &operator=(const Mesh &) = delete;
 
-    Mesh(Mesh &&other) noexcept;
-    Mesh &operator=(Mesh &&other) noexcept;
+    Mesh(Mesh &&other) noexcept = default;
+    Mesh &operator=(Mesh &&other) noexcept = default;
 
     void draw() const;
 
-    [[nodiscard]] GLuint getVAO() const { return VAO; }
+    [[nodiscard]] GLuint getVAO() const { return VAO.id(); }
     [[nodiscard]] GLsizei getCount() const { return count; }
     [[nodiscard]] bool getHasIndices() const { return hasIndices; }
 
 private:
-    GLuint VAO = 0;
-    GLuint EBO = 0;
-    std::vector<GLuint> VBOs;
+    VertexArray VAO;
+    std::optional<Buffer> EBO;
+    std::vector<Buffer> VBOs;
 
     GLsizei count = 0;
     GLenum indexType = GL_UNSIGNED_INT;

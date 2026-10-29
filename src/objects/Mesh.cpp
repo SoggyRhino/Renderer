@@ -1,8 +1,8 @@
+#include "Mesh.h"
 
 #include <string>
 #include <unordered_map>
 #include "tiny_gltf_v3.h"
-#include "mesh.h"
 
 namespace {
     const std::unordered_map<std::string, GLuint> kAttributeLocations = {
@@ -25,8 +25,7 @@ namespace {
 Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
     mode = (prim.mode >= 0) ? static_cast<GLenum>(prim.mode) : GL_TRIANGLES;
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    VAO.bind();
 
     GLsizei vertexCount = 0;
 
@@ -63,13 +62,9 @@ Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
         const GLint numComponents = getNumComponents(acc->type);
         if (numComponents == 0) continue;
 
-        GLuint vbo = 0;
-        glGenBuffers(1, &vbo);
-        VBOs.push_back(vbo);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(view->byte_length),
-                     buf->data.data + view->byte_offset, GL_STATIC_DRAW);
+        Buffer &vbo = VBOs.emplace_back();
+        vbo.setData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(view->byte_length),
+                    buf->data.data + view->byte_offset, GL_STATIC_DRAW);
 
         glVertexAttribPointer(
             loc->second,
@@ -96,9 +91,8 @@ Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
                     indexType = static_cast<GLenum>(idxAcc->component_type);
                     indexOffset = static_cast<uintptr_t>(idxAcc->byte_offset);
 
-                    glGenBuffers(1, &EBO);
-                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(idxView->byte_length),
+                    EBO.emplace();
+                    EBO->setData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(idxView->byte_length),
                                  idxBuf->data.data + idxView->byte_offset, GL_STATIC_DRAW);
                 }
             }
@@ -109,67 +103,17 @@ Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
         count = vertexCount;
     }
 
-    glBindVertexArray(0);
-}
-
-Mesh::~Mesh() {
-    if (EBO != 0) {
-        glDeleteBuffers(1, &EBO);
-    }
-    if (!VBOs.empty()) {
-        glDeleteBuffers(static_cast<GLsizei>(VBOs.size()), VBOs.data());
-    }
-    if (VAO != 0) {
-        glDeleteVertexArrays(1, &VAO);
-    }
-}
-
-Mesh::Mesh(Mesh &&other) noexcept
-    : VAO(other.VAO),
-      EBO(other.EBO),
-      VBOs(std::move(other.VBOs)),
-      count(other.count),
-      indexType(other.indexType),
-      indexOffset(other.indexOffset),
-      mode(other.mode),
-      hasIndices(other.hasIndices) {
-    other.VAO = 0;
-    other.EBO = 0;
-    other.count = 0;
-    other.hasIndices = false;
-}
-
-Mesh &Mesh::operator=(Mesh &&other) noexcept {
-    if (this != &other) {
-        if (EBO != 0) glDeleteBuffers(1, &EBO);
-        if (!VBOs.empty()) glDeleteBuffers(static_cast<GLsizei>(VBOs.size()), VBOs.data());
-        if (VAO != 0) glDeleteVertexArrays(1, &VAO);
-
-        VAO = other.VAO;
-        EBO = other.EBO;
-        VBOs = std::move(other.VBOs);
-        count = other.count;
-        indexType = other.indexType;
-        indexOffset = other.indexOffset;
-        mode = other.mode;
-        hasIndices = other.hasIndices;
-
-        other.VAO = 0;
-        other.EBO = 0;
-        other.count = 0;
-        other.hasIndices = false;
-    }
-    return *this;
+    VAO.unbind();
 }
 
 void Mesh::draw() const {
-    if (VAO == 0 || count == 0) return;
+    if (count == 0) return;
 
-    glBindVertexArray(VAO);
+    VAO.bind();
     if (hasIndices) {
         glDrawElements(mode, count, indexType, reinterpret_cast<void *>(indexOffset));
     } else {
         glDrawArrays(mode, 0, count);
     }
-    glBindVertexArray(0);
+    VAO.unbind();
 }

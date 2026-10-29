@@ -2,13 +2,14 @@
 
 #include <glad/glad.h>
 #include "Scene.h"
+#include "utils/Buffers.h"
 #include "utils/Program.h"
 
 class SquareTestScene : public Scene {
 public:
     SquareTestScene();
 
-    ~SquareTestScene() override;
+    ~SquareTestScene() override = default;
 
     void update(double dt) override;
 
@@ -18,7 +19,8 @@ public:
 
 private:
     const Program program;
-    GLuint VAO, VBO;
+    VertexArray VAO;
+    Buffer VBO;
 
     float speed = 90.0f;
     float currentAngle = 0.0f;
