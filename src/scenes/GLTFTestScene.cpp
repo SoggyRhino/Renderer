@@ -1,5 +1,3 @@
-#include "tiny_gltf_v3.h"
-
 #include "GLTFTestScene.h"
 
 #include <format>
@@ -7,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "utils/Model.h"
+#include "../objects/Model.h"
 
 
 void GLTFTestScene::update(const double dt) {

@@ -99,11 +99,12 @@ add_executable(${PROJECT_NAME}
         src/utils/Buffers.h
         src/scenes/GLTFTestScene.cpp
         src/scenes/GLTFTestScene.h
-
+        src/objects/Mesh.cpp
+        src/objects/Mesh.h
+        src/objects/Model.cpp
+        src/objects/Model.h
 
         lib/tiny_gltf_v3.c
-        src/utils/model.cpp
-        src/utils/model.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

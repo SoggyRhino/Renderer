@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "Paths.h"
-#include "utils/Model.h"
+#include "../objects/Model.h"
 
 class GLTFTestScene : public Scene {
 public:
