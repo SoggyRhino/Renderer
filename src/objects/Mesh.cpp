@@ -3,6 +3,8 @@
 #include <string>
 #include <unordered_map>
 #include "tiny_gltf_v3.h"
+#include "Texture.h"
+#include "utils/Program.h"
 
 namespace {
     const std::unordered_map<std::string, GLuint> kAttributeLocations = {
@@ -22,7 +24,8 @@ namespace {
     }
 }
 
-Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
+Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim, const Texture *baseColor)
+    : baseColorTexture(baseColor) {
     mode = (prim.mode >= 0) ? static_cast<GLenum>(prim.mode) : GL_TRIANGLES;
 
     VAO.bind();
@@ -66,7 +69,7 @@ Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
         vbo.setData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(view->byte_length),
                     buf->data.data + view->byte_offset, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(
+        VAO.setAttributePointer(
             loc->second,
             numComponents,
             static_cast<GLenum>(acc->component_type),
@@ -74,7 +77,6 @@ Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
             static_cast<GLsizei>(view->byte_stride),
             reinterpret_cast<void *>(static_cast<intptr_t>(acc->byte_offset))
         );
-        glEnableVertexAttribArray(loc->second);
     }
 
     if (prim.indices >= 0 && static_cast<uint32_t>(prim.indices) < model.accessors_count) {
@@ -106,14 +108,25 @@ Mesh::Mesh(const tg3_model &model, const tg3_primitive &prim) {
     VAO.unbind();
 }
 
-void Mesh::draw() const {
+void Mesh::draw(const Program &program) const {
     if (count == 0) return;
 
-    VAO.bind();
-    if (hasIndices) {
-        glDrawElements(mode, count, indexType, reinterpret_cast<void *>(indexOffset));
+    const bool hasTex = baseColorTexture && baseColorTexture->isValid();
+    if (hasTex) {
+        baseColorTexture->bind(0);
+        program.setBool("hasBaseColor", true);
+        program.setInt("baseColor", 0);
     } else {
-        glDrawArrays(mode, 0, count);
+        program.setBool("hasBaseColor", false);
     }
-    VAO.unbind();
+
+    if (hasIndices) {
+        VAO.drawElements(mode, count, indexType, reinterpret_cast<void *>(indexOffset));
+    } else {
+        VAO.drawArrays(mode, 0, count);
+    }
+
+    if (hasTex) {
+        baseColorTexture->unbind(0);
+    }
 }

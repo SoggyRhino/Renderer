@@ -7,7 +7,8 @@
 int main(int argc, const char *argv[]) {
     Window window{};
     GLTFTestScene scene{"models/fish/BarramundiFish.gltf"};
-
+    //SquareTestScene scene{};
+    
     double lastFrame = 0.0f;
 
     while (!window.shouldClose()) {

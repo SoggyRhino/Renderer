@@ -20,11 +20,8 @@ SquareTestScene::SquareTestScene()
 
     VBO.setData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void *>(nullptr));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    VAO.setAttributePointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
+    VAO.setAttributePointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(2 * sizeof(float)));
 
     VAO.unbind();
 }
@@ -48,9 +45,7 @@ void SquareTestScene::render() const {
 
     program.setMatx4fv("uRotation", rotationMatrix);
 
-    VAO.bind();
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    VAO.unbind();
+    VAO.drawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void SquareTestScene::renderUI() {

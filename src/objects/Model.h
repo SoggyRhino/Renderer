@@ -1,9 +1,12 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "Mesh.h"
+#include "Texture.h"
+#include "utils/Program.h"
 
 class Model {
 public:
@@ -16,11 +19,11 @@ public:
     Model(Model &&) noexcept = default;
     Model &operator=(Model &&) noexcept = default;
 
-    void draw() const;
+    void draw(const Program &program) const;
 
     [[nodiscard]] const std::vector<Mesh> &getMeshes() const { return meshes; }
-    [[nodiscard]] std::vector<Mesh> &getMeshes() { return meshes; }
 
 private:
+    std::vector<std::unique_ptr<Texture>> textures;
     std::vector<Mesh> meshes;
 };

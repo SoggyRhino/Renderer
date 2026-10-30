@@ -31,7 +31,7 @@ void GLTFTestScene::render() const {
     program.setMatx4fv("view", viewMatrix);
     program.setMatx4fv("projection", projectionMatrix);
 
-    model.draw();
+    model.draw(program);
 }
 
 void GLTFTestScene::renderUI() {

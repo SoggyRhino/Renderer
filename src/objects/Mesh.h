@@ -3,14 +3,14 @@
 #include <optional>
 #include <vector>
 #include <glad/glad.h>
+#include "tiny_gltf_v3.h"
+#include "Texture.h"
 #include "utils/Buffers.h"
-
-struct tg3_model;
-struct tg3_primitive;
+#include "utils/Program.h"
 
 class Mesh {
 public:
-    Mesh(const tg3_model &model, const tg3_primitive &prim);
+    Mesh(const tg3_model &model, const tg3_primitive &prim, const Texture *baseColor = nullptr);
     ~Mesh() = default;
 
     Mesh(const Mesh &) = delete;
@@ -19,7 +19,7 @@ public:
     Mesh(Mesh &&other) noexcept = default;
     Mesh &operator=(Mesh &&other) noexcept = default;
 
-    void draw() const;
+    void draw(const Program &program) const;
 
     [[nodiscard]] GLuint getVAO() const { return VAO.id(); }
     [[nodiscard]] GLsizei getCount() const { return count; }
@@ -35,4 +35,6 @@ private:
     uintptr_t indexOffset = 0;
     GLenum mode = GL_TRIANGLES;
     bool hasIndices = false;
+
+    const Texture *baseColorTexture = nullptr;
 };

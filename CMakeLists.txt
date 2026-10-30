@@ -103,6 +103,8 @@ add_executable(${PROJECT_NAME}
         src/objects/Mesh.h
         src/objects/Model.cpp
         src/objects/Model.h
+        src/objects/Texture.cpp
+        src/objects/Texture.h
 
         lib/tiny_gltf_v3.c
 )

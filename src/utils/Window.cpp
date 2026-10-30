@@ -55,7 +55,6 @@ Window::Window(std::string title, int width, int height) : title(std::move(title
     glEnable(GL_DEPTH_TEST);
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
 
-    // Initialize ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -66,7 +65,6 @@ Window::Window(std::string title, int width, int height) : title(std::move(title
 
 
 Window::~Window() {
-    // Shutdown ImGui
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

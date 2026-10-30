@@ -13,7 +13,6 @@ Program::~Program() {
 }
 
 Program::Program(const std::filesystem::path& vertPath, const std::filesystem::path& fragPath) {
-    // If frag fails, vert's destructor automatically calls glDeleteShader!
     const Shader vert(GL_VERTEX_SHADER, vertPath);
     const Shader frag(GL_FRAGMENT_SHADER, fragPath);
 

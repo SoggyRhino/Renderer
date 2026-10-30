@@ -40,8 +40,25 @@ public:
         glBindVertexArray(0);
     }
 
+    void setAttributePointer(GLuint index, GLint size, GLenum type, GLboolean normalized,
+                             GLsizei stride, const void *pointer) const {
+        glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+        glEnableVertexAttribArray(index);
+    }
+
+    void drawArrays(GLenum mode, GLint first, GLsizei count) const {
+        bind();
+        glDrawArrays(mode, first, count);
+        unbind();
+    }
+
+    void drawElements(GLenum mode, GLsizei count, GLenum type, const void *indices = nullptr) const {
+        bind();
+        glDrawElements(mode, count, type, indices);
+        unbind();
+    }
+
     [[nodiscard]] GLuint id() const { return id_; }
-    [[nodiscard]] GLuint get() const { return id_; }
 
 private:
     GLuint id_ = 0;
@@ -96,7 +113,6 @@ public:
     }
 
     [[nodiscard]] GLuint id() const { return id_; }
-    [[nodiscard]] GLuint get() const { return id_; }
 
 private:
     GLuint id_ = 0;
