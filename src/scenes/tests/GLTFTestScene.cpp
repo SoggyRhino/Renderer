@@ -1,12 +1,10 @@
 #include "GLTFTestScene.h"
 
-#include <format>
 #include <imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../objects/Model.h"
-
+#include "../../objects/Model.h"
 
 void GLTFTestScene::update(const double dt) {
     if (!pause) {

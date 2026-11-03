@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
-#include "Scene.h"
+#include "../Scene.h"
 #include "utils/Buffers.h"
 #include "utils/Program.h"
 

@@ -9,7 +9,7 @@
 
 class Program {
 public:
-    Program(const std::filesystem::path &vertPath, const std::filesystem::path &fragPath);
+    Program(const std::string_view& vertShader, const std::string_view& fragShader);
 
     ~Program();
 
@@ -33,13 +33,13 @@ private:
 
     GLint getUniformLocation(const std::string &name) const;
 
-    static GLuint createShader(GLenum type, const std::filesystem::path &shaderPath);
+    static GLuint createShader(GLenum type, const std::string_view &shaderContent);
 
     struct Shader {
         GLuint id = 0;
 
-        Shader(const GLenum type, const std::filesystem::path &path)
-            : id(createShader(type, path)) {
+        Shader(const GLenum type, const std::string_view &shaderContent)
+            : id(createShader(type, shaderContent)) {
         }
 
         ~Shader() {

@@ -12,9 +12,9 @@ Program::~Program() {
     }
 }
 
-Program::Program(const std::filesystem::path& vertPath, const std::filesystem::path& fragPath) {
-    const Shader vert(GL_VERTEX_SHADER, vertPath);
-    const Shader frag(GL_FRAGMENT_SHADER, fragPath);
+Program::Program(const std::string_view &vertShader, const std::string_view &fragShader) {
+    const Shader vert(GL_VERTEX_SHADER, vertShader);
+    const Shader frag(GL_FRAGMENT_SHADER, fragShader);
 
     this->id = glCreateProgram();
     glAttachShader(this->id, vert.id);
@@ -35,16 +35,8 @@ Program::Program(const std::filesystem::path& vertPath, const std::filesystem::p
     }
 }
 
-
-GLuint Program::createShader(const GLenum type, const std::filesystem::path& shaderPath) {
-    std::ifstream file(shaderPath, std::ios::binary);
-    if (!file.is_open()) {
-        throw std::runtime_error(std::format("Could not open file: {}", shaderPath.string()));
-    }
-
-    const std::string contents((std::istreambuf_iterator<char>(file)),
-                               std::istreambuf_iterator<char>());
-    const char* source = contents.c_str();
+GLuint Program::createShader(const GLenum type, const std::string_view &shaderContent) {
+    const char *source = shaderContent.data();
 
     const GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, nullptr);
@@ -60,14 +52,14 @@ GLuint Program::createShader(const GLenum type, const std::filesystem::path& sha
 
         glDeleteShader(shader);
 
-        const char* shaderTypeStr = (type == GL_VERTEX_SHADER) ? "Vertex" : "Fragment";
-        throw std::runtime_error(std::format("{} shader compilation error ({}): {}",
-                                             shaderTypeStr, shaderPath.string(), infoLog));
+        const char *shaderTypeStr = (type == GL_VERTEX_SHADER) ? "Vertex" : "Fragment";
+        throw std::runtime_error(std::format("{} shader compilation error: {}",
+                                             shaderTypeStr, infoLog));
     }
     return shader;
 }
 
-GLint Program::getUniformLocation(const std::string& name) const {
+GLint Program::getUniformLocation(const std::string &name) const {
     if (const auto it = this->uniforms.find(name); it != this->uniforms.end()) {
         return it->second;
     }

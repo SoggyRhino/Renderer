@@ -10,79 +10,20 @@ if(MINGW)
     add_link_options(-static-libstdc++ -static-libgcc)
 endif()
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Dependencies.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateShadersHeader.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateModelsHeader.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyAssets.cmake)
 
-include(FetchContent)
+set(GENERATED_DIR ${CMAKE_SOURCE_DIR}/src/generated)
 
-# Fetch GLFW
-FetchContent_Declare(
-        glfw
-        GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG        master
+generate_shaders_header(
+        SHADER_DIR ${CMAKE_SOURCE_DIR}/shaders
+        OUTPUT_DIR ${GENERATED_DIR}
 )
-FetchContent_MakeAvailable(glfw)
-
-# Fetch GLAD
-FetchContent_Declare(
-        glad
-        GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-        GIT_TAG        master
-)
-FetchContent_MakeAvailable(glad)
-
-# Fetch GLM
-FetchContent_Declare(
-        glm
-        GIT_REPOSITORY https://github.com/g-truc/glm.git
-        GIT_TAG        master
-)
-FetchContent_MakeAvailable(glm)
-
-# Fetch stb
-FetchContent_Declare(
-        stb_image
-        GIT_REPOSITORY https://github.com/nothings/stb.git
-        GIT_TAG        master
-)
-FetchContent_MakeAvailable(stb_image)
-
-add_library(stb_image INTERFACE)
-target_include_directories(stb_image INTERFACE
-        ${stb_image_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib
-)
-
-# Fetch Dear ImGui
-FetchContent_Declare(
-        imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG        docking # or a release tag like v1.91.5
-)
-FetchContent_MakeAvailable(imgui)
-
-# Define ImGui static library along with GLFW and OpenGL3 backends
-add_library(imgui STATIC
-        ${imgui_SOURCE_DIR}/imgui.cpp
-        ${imgui_SOURCE_DIR}/imgui_demo.cpp
-        ${imgui_SOURCE_DIR}/imgui_draw.cpp
-        ${imgui_SOURCE_DIR}/imgui_tables.cpp
-        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-)
-
-target_include_directories(imgui PUBLIC
-        ${imgui_SOURCE_DIR}
-        ${imgui_SOURCE_DIR}/backends
-)
-
-# Link GLFW and GLAD so the ImGui backends can access glfw3.h and OpenGL headers
-target_link_libraries(imgui PUBLIC
-        glfw
-        glad
+generate_models_header(
+        MODEL_DIR ${CMAKE_SOURCE_DIR}/models
+        OUTPUT_DIR ${GENERATED_DIR}
 )
 
 add_executable(${PROJECT_NAME}
@@ -91,14 +32,14 @@ add_executable(${PROJECT_NAME}
         src/utils/Window.h
         src/utils/Program.cpp
         src/utils/Program.h
-        src/scenes/Scene.cpp
         src/scenes/Scene.h
-        src/scenes/SquareTestScene.cpp
-        src/scenes/SquareTestScene.h
-        src/Paths.h
+        src/scenes/tests/SquareTestScene.cpp
+        src/scenes/tests/SquareTestScene.h
         src/utils/Buffers.h
-        src/scenes/GLTFTestScene.cpp
-        src/scenes/GLTFTestScene.h
+        src/scenes/tests/GLTFTestScene.cpp
+        src/scenes/tests/GLTFTestScene.h
+        src/scenes/tests/AllModelsTestScene.cpp
+        src/scenes/tests/AllModelsTestScene.h
         src/objects/Mesh.cpp
         src/objects/Mesh.h
         src/objects/Model.cpp
@@ -112,6 +53,7 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/lib
+        ${GENERATED_DIR}
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE TINYGLTF3_ENABLE_FS)
 
@@ -126,23 +68,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         imgui
 )
 
-# --- ASSET COPYING ---
-set(SHADERS_DIR ${CMAKE_SOURCE_DIR}/shaders)
-set(MODELS_DIR ${CMAKE_SOURCE_DIR}/models)
-
-add_custom_target(copy_assets ALL
-        # Copy Shaders
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADERS_DIR} $<TARGET_FILE_DIR:${PROJECT_NAME}>/shaders
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADERS_DIR} ${CMAKE_BINARY_DIR}/shaders
-
-        # Copy Models
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${MODELS_DIR} $<TARGET_FILE_DIR:${PROJECT_NAME}>/models
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${MODELS_DIR} ${CMAKE_BINARY_DIR}/models
-
-        COMMENT "Copying shaders and models to target output directory"
+copy_assets(
+        TARGET ${PROJECT_NAME}
+        DIRECTORIES
+        ${CMAKE_SOURCE_DIR}/models
 )
-
-add_dependencies(${PROJECT_NAME} copy_assets)
 
 if(MINGW)
     get_filename_component(MINGW_BIN_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)

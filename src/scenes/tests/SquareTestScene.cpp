@@ -1,11 +1,11 @@
+#include "SquareTestScene.h"
 #include <imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Paths.h"
-#include "SquareTestScene.h"
+#include "shaders.h"
 
 SquareTestScene::SquareTestScene()
-    : program(VERTEX_SHADER_2D, FRAGMENT_SHADER_2D) {
+    : program(SIMPLE_2D_VERT, SIMPLE_2D_FRAG) {
     constexpr float vertices[] = {
         -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,

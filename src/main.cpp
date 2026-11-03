@@ -1,14 +1,14 @@
 #include <thread>
 
-#include "scenes/GLTFTestScene.h"
-#include "scenes/SquareTestScene.h"
+#include "scenes/tests/AllModelsTestScene.h"
 #include "utils/Window.h"
 
 int main(int argc, const char *argv[]) {
     Window window{};
-    GLTFTestScene scene{"models/fish/BarramundiFish.gltf"};
+    AllModelsTestScene scene{};
+    // GLTFTestScene scene{"models/BarramundiFish/BarramundiFish.gltf"};
     //SquareTestScene scene{};
-    
+
     double lastFrame = 0.0f;
 
     while (!window.shouldClose()) {
