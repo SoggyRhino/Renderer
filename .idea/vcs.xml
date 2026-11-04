@@ -7,5 +7,10 @@
     <mapping directory="$PROJECT_DIR$/build/_deps/glm-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/_deps/imgui-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/build/_deps/stb_image-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-refactor/_deps/glad-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-refactor/_deps/glfw-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-refactor/_deps/glm-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-refactor/_deps/imgui-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-refactor/_deps/stb_image-src" vcs="Git" />
   </component>
 </project>

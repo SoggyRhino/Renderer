@@ -1,10 +1,9 @@
 #pragma once
 #include <functional>
-#include <ranges>
 #include <unordered_map>
 
-#include "GLFW/glfw3.h"
-#include "utils/Camera.h"
+#include "graphics/rendering/wrappers/Camera.h"
+#include "graphics/runtime/Input.h"
 
 class Scene {
 public:
@@ -13,6 +12,9 @@ public:
   virtual ~Scene() = default;
 
   virtual void update(double dt) = 0;
+
+  virtual void updateInput(double dt, const InputState& input) {
+  }
 
   virtual void render() const = 0;
 
@@ -24,13 +26,9 @@ public:
 
   [[nodiscard]] bool shouldRenderUI() const;
 
-  std::vector<int> getBoundKeys();
-
-  void handleKeyPress(int key);
+  virtual void onKeyEvent(Key key, KeyAction action);
 
   void handleWindowResize(int width, int height);
-
-  void setupCameraBindings();
 
 protected:
   int windowWidth{}, windowHeight{};
@@ -39,9 +37,9 @@ protected:
   uint8_t controls{0};
   Camera camera;
 
-  std::unordered_map<int, std::function<void()>> callbacks;
+  std::unordered_map<Key, std::function<void()>> callbacks;
 
-  void bind(const int key, std::function<void()> callback) {
+  void bind(const Key key, std::function<void()> callback) {
     callbacks[key] = std::move(callback);
   }
 };

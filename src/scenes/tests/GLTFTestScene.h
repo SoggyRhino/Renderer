@@ -1,14 +1,16 @@
 #pragma once
 
 #include "../Scene.h"
-#include "utils/Program.h"
+#include "graphics/rendering/objects/Model.h"
+#include "graphics/rendering/wrappers/Program.h"
 
-#include "../../objects/Model.h"
 
 class GLTFTestScene : public Scene {
 public:
   explicit GLTFTestScene(int windowWidth, int windowHeight,
                          const std::string& filename);
+
+  void updateInput(double dt, const InputState& input) override;
 
   void update(double dt) override;
 

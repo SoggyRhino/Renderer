@@ -1,29 +1,35 @@
+#include <chrono>
 #include <thread>
 
 #include "scenes/tests/AllModelsTestScene.h"
 #include "scenes/tests/GLTFTestScene.h"
-#include "utils/Window.h"
+#include "graphics/rendering/wrappers/RenderState.h"
+#include "graphics/runtime/ImGuiLayer.h"
+#include "graphics/runtime/Window.h"
 
 int main(int argc, const char* argv[]) {
   Window window{};
+  ImGuiLayer ui{window};
 
   GLTFTestScene scene{window.getWidth(), window.getHeight(),
                       "models/BarramundiFish/BarramundiFish.gltf"};
-  const auto keys = scene.getBoundKeys();
+  window.setResizeCallback(
+      [&scene](const int width, const int height) {
+        scene.handleWindowResize(width, height);
+      });
+  window.setKeyCallback(
+      [&scene](const Key key, const KeyAction action) {
+        scene.onKeyEvent(key, action);
+      });
   window.setShowCursor(scene.shouldShowCursor());
 
-  double lastFrame = 0.0f;
+  auto lastFrame = std::chrono::steady_clock::now();
   while (!window.shouldClose()) {
-    glfwPollEvents();
+    window.pollEvents();
 
-    for (const auto& key : keys) {
-      if (window.isPressed(key)) {
-        scene.handleKeyPress(key);
-      }
-    }
-
-    const double currentFrame = glfwGetTime();
-    const double deltaTime = currentFrame - lastFrame;
+    const auto currentFrame = std::chrono::steady_clock::now();
+    const double deltaTime = std::chrono::duration<double>(
+        currentFrame - lastFrame).count();
     lastFrame = currentFrame;
 
     if (const double sleep = 1.0f / 120.0f - deltaTime; sleep > 0) {
@@ -31,15 +37,16 @@ int main(int argc, const char* argv[]) {
           std::chrono::milliseconds(static_cast<int>(sleep * 1000)));
     }
 
-    window.clear();
+    RenderState::clear();
 
-    scene.render();
+    scene.updateInput(deltaTime, window.input());
     scene.update(deltaTime);
+    scene.render();
 
     if (scene.shouldShowCursor()) {
-      window.beginUI();
+      ui.begin();
       scene.renderUI();
-      window.endUI();
+      ui.end();
     }
 
     window.update();

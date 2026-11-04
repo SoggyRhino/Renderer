@@ -7,6 +7,14 @@
       <list>
         <option value="$PROJECT_DIR$/cmake-build-debug" />
         <option value="$PROJECT_DIR$/lib" />
+        <option value="$PROJECT_DIR$/.git" />
+        <option value="$PROJECT_DIR$/.idea" />
+        <option value="$PROJECT_DIR$/build" />
+        <option value="$PROJECT_DIR$/cmake" />
+        <option value="$PROJECT_DIR$/cmake-build-debug" />
+        <option value="$PROJECT_DIR$/lib" />
+        <option value="$PROJECT_DIR$/models" />
+        <option value="$PROJECT_DIR$/shaders" />
       </list>
     </option>
   </component>

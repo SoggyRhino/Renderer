@@ -4,9 +4,9 @@
 #include <vector>
 #include <glad/glad.h>
 #include "tiny_gltf_v3.h"
-#include "Texture.h"
-#include "utils/Buffers.h"
-#include "utils/Program.h"
+#include "graphics/rendering/wrappers/Buffers.h"
+#include "graphics/rendering/wrappers/Program.h"
+#include "graphics/rendering/wrappers/Texture.h"
 
 class Mesh {
 public:

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../Scene.h"
-#include "utils/Program.h"
+#include "graphics/rendering/objects/Model.h"
+#include "graphics/rendering/wrappers/Program.h"
 #include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
-#include "../../objects/Model.h"
 
 class AllModelsTestScene : public Scene {
 public:

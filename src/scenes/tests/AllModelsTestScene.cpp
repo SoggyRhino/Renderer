@@ -10,7 +10,6 @@
 
 #include "models.h"
 #include "shaders.h"
-#include "../../objects/Model.h"
 
 void AllModelsTestScene::initModelNames() {
   modelNames.clear();

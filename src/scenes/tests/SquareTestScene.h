@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../Scene.h"
-#include "utils/Buffers.h"
-#include "utils/Program.h"
+#include "graphics/rendering/wrappers/Buffers.h"
+#include "graphics/rendering/wrappers/Program.h"
 
 class SquareTestScene : public Scene {
 public:

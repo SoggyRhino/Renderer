@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "Mesh.h"
-#include "Texture.h"
-#include "utils/Program.h"
+#include "graphics/rendering/wrappers/Program.h"
+#include "graphics/rendering/wrappers/Texture.h"
 
 class Model {
 public:

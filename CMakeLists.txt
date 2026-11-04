@@ -28,26 +28,30 @@ generate_models_header(
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/utils/Window.cpp
-        src/utils/Window.h
-        src/utils/Program.cpp
-        src/utils/Program.h
-        src/utils/Camera.cpp
-        src/utils/Camera.h
+        src/graphics/runtime/Window.cpp
+        src/graphics/runtime/Window.h
+        src/graphics/runtime/Input.h
+        src/graphics/runtime/ImGuiLayer.cpp
+        src/graphics/runtime/ImGuiLayer.h
+        src/graphics/rendering/wrappers/RenderState.h
+        src/graphics/rendering/wrappers/Program.cpp
+        src/graphics/rendering/wrappers/Program.h
+        src/graphics/rendering/wrappers/Camera.cpp
+        src/graphics/rendering/wrappers/Camera.h
         src/scenes/Scene.h
         src/scenes/tests/SquareTestScene.cpp
         src/scenes/tests/SquareTestScene.h
-        src/utils/Buffers.h
+        src/graphics/rendering/wrappers/Buffers.h
         src/scenes/tests/GLTFTestScene.cpp
         src/scenes/tests/GLTFTestScene.h
         src/scenes/tests/AllModelsTestScene.cpp
         src/scenes/tests/AllModelsTestScene.h
-        src/objects/Mesh.cpp
-        src/objects/Mesh.h
-        src/objects/Model.cpp
-        src/objects/Model.h
-        src/objects/Texture.cpp
-        src/objects/Texture.h
+        src/graphics/rendering/objects/Mesh.cpp
+        src/graphics/rendering/objects/Mesh.h
+        src/graphics/rendering/objects/Model.cpp
+        src/graphics/rendering/objects/Model.h
+        src/graphics/rendering/wrappers/Texture.cpp
+        src/graphics/rendering/wrappers/Texture.h
 
         lib/tiny_gltf_v3.c
         src/scenes/Scene.cpp

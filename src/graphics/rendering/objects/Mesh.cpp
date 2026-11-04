@@ -3,8 +3,8 @@
 #include <string>
 #include <unordered_map>
 #include "tiny_gltf_v3.h"
-#include "Texture.h"
-#include "utils/Program.h"
+#include "graphics/rendering/wrappers/Texture.h"
+#include "graphics/rendering/wrappers/Program.h"
 
 namespace {
 const std::unordered_map<std::string, GLuint> kAttributeLocations = {
