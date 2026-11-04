@@ -32,6 +32,8 @@ add_executable(${PROJECT_NAME}
         src/utils/Window.h
         src/utils/Program.cpp
         src/utils/Program.h
+        src/utils/Camera.cpp
+        src/utils/Camera.h
         src/scenes/Scene.h
         src/scenes/tests/SquareTestScene.cpp
         src/scenes/tests/SquareTestScene.h
@@ -48,6 +50,7 @@ add_executable(${PROJECT_NAME}
         src/objects/Texture.h
 
         lib/tiny_gltf_v3.c
+        src/scenes/Scene.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

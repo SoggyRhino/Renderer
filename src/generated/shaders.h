@@ -42,7 +42,8 @@ void main() {
 }
 )__SHADER__";
 
-inline constexpr std::string_view SIMPLE_2D_FRAG = R"__SHADER__(#version 460 core
+inline constexpr std::string_view SIMPLE_2D_FRAG =
+    R"__SHADER__(#version 460 core
 
 layout (location = 0) in vec3 vColor;
 
@@ -53,7 +54,8 @@ void main(){
 }
 )__SHADER__";
 
-inline constexpr std::string_view SIMPLE_2D_VERT = R"__SHADER__(#version 460 core
+inline constexpr std::string_view SIMPLE_2D_VERT =
+    R"__SHADER__(#version 460 core
 
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec3 aColor;
@@ -68,7 +70,8 @@ void main(){
 }
 )__SHADER__";
 
-inline constexpr std::string_view SIMPLE_3D_FRAG = R"__SHADER__(#version 460 core
+inline constexpr std::string_view SIMPLE_3D_FRAG =
+    R"__SHADER__(#version 460 core
 
 out vec4 FragColor;
 
@@ -76,7 +79,8 @@ void main() {
     FragColor = vec4(1.0, 0.5, 0.2, 1.0);
 })__SHADER__";
 
-inline constexpr std::string_view SIMPLE_3D_VERT = R"__SHADER__(#version 460 core
+inline constexpr std::string_view SIMPLE_3D_VERT =
+    R"__SHADER__(#version 460 core
 
 layout (location = 0) in vec3 aPos;
 
@@ -87,4 +91,3 @@ uniform mat4 projection;
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
 })__SHADER__";
-

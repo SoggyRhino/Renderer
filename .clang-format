@@ -1,0 +1,11 @@
+BasedOnStyle: Google
+
+
+# --- Modern C++ Sorting ---
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+
+# --- Cleanups ---
+FixNamespaceComments: true
+ReflowComments: IndentOnly
+---

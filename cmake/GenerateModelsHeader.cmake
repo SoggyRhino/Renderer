@@ -58,30 +58,30 @@ function(generate_models_header)
     endif()
     list(APPEND model_names "${name}")
 
-    file(TO_CMAKE_PATH "${file}" file_path)
+    file(RELATIVE_PATH file_path "${ARG_MODEL_DIR}" "${file}")
+
     string(APPEND model_decls
-           "    inline constexpr ModelPath ${name}{\"${file_path}\"};\n")
+            "    inline constexpr ModelPath ${name}{\"${file_path}\"};\n")
   endforeach()
 
   list(LENGTH model_names model_count)
   string(REPLACE ";" ", " model_list "${model_names}")
 
   set(content
-"#pragma once
+          "#pragma once
 #include <array>
-#include <cstddef>
 #include <string_view>
 
 struct ModelPath {
     std::string_view value;
-    constexpr explicit ModelPath(std::string_view v) : value(v) {}
-    constexpr operator std::string_view() const { return value; }
+    constexpr explicit ModelPath(const std::string_view v) : value(v) {}
+    explicit constexpr operator std::string_view() const { return value; }
 };
 
 namespace Models {
 ${model_decls}
     inline constexpr std::size_t count = ${model_count};
-    inline constexpr std::array<ModelPath, ${model_count}> all{${model_list}};
+    inline constexpr std::array all{${model_list}};
 }
 ")
 

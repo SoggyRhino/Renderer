@@ -69,7 +69,6 @@ function(generate_shaders_header)
     endif()
     list(APPEND seen_names "${name}")
 
-    # Re-run CMake when the shader's contents change (not just when files are added/removed).
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${file}")
 
     file(READ "${file}" source)

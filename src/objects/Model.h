@@ -10,20 +10,20 @@
 
 class Model {
 public:
-    explicit Model(const std::string &filename);
-    ~Model() = default;
+  explicit Model(const std::string& filename);
+  ~Model() = default;
 
-    Model(const Model &) = delete;
-    Model &operator=(const Model &) = delete;
+  Model(const Model&) = delete;
+  Model& operator=(const Model&) = delete;
 
-    Model(Model &&) noexcept = default;
-    Model &operator=(Model &&) noexcept = default;
+  Model(Model&&) noexcept = default;
+  Model& operator=(Model&&) noexcept = default;
 
-    void draw(const Program &program) const;
+  void draw(const Program& program) const;
 
-    [[nodiscard]] const std::vector<Mesh> &getMeshes() const { return meshes; }
+  [[nodiscard]] const std::vector<Mesh>& getMeshes() const { return meshes; }
 
 private:
-    std::vector<std::unique_ptr<Texture>> textures;
-    std::vector<Mesh> meshes;
+  std::vector<std::unique_ptr<Texture>> textures;
+  std::vector<Mesh> meshes;
 };

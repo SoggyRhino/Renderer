@@ -1,4 +1,3 @@
-#include <fstream>
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -7,98 +6,105 @@
 #include <string>
 
 Program::~Program() {
-    if (this->id != 0) {
-        glDeleteProgram(this->id);
-    }
+  if (this->id != 0) {
+    glDeleteProgram(this->id);
+  }
 }
 
-Program::Program(const std::string_view &vertShader, const std::string_view &fragShader) {
-    const Shader vert(GL_VERTEX_SHADER, vertShader);
-    const Shader frag(GL_FRAGMENT_SHADER, fragShader);
+Program::Program(const std::string_view& vertShader,
+                 const std::string_view& fragShader) {
+  const Shader vert(GL_VERTEX_SHADER, vertShader);
+  const Shader frag(GL_FRAGMENT_SHADER, fragShader);
 
-    this->id = glCreateProgram();
-    glAttachShader(this->id, vert.id);
-    glAttachShader(this->id, frag.id);
-    glLinkProgram(this->id);
+  this->id = glCreateProgram();
+  glAttachShader(this->id, vert.id);
+  glAttachShader(this->id, frag.id);
+  glLinkProgram(this->id);
 
-    GLint success = 0;
-    glGetProgramiv(this->id, GL_LINK_STATUS, &success);
-    if (!success) {
-        GLint logLength = 0;
-        glGetProgramiv(this->id, GL_INFO_LOG_LENGTH, &logLength);
-        std::string infoLog(logLength > 0 ? logLength : 1, '\0');
-        glGetProgramInfoLog(this->id, logLength, nullptr, infoLog.data());
+  GLint success = 0;
+  glGetProgramiv(this->id, GL_LINK_STATUS, &success);
+  if (!success) {
+    GLint logLength = 0;
+    glGetProgramiv(this->id, GL_INFO_LOG_LENGTH, &logLength);
+    std::string infoLog(logLength > 0 ? logLength : 1, '\0');
+    glGetProgramInfoLog(this->id, logLength, nullptr, infoLog.data());
 
-        glDeleteProgram(this->id);
-        this->id = 0;
-        throw std::runtime_error(std::format("Program linking error: {}", infoLog));
-    }
+    glDeleteProgram(this->id);
+    this->id = 0;
+    throw std::runtime_error(std::format("Program linking error: {}", infoLog));
+  }
 }
 
-GLuint Program::createShader(const GLenum type, const std::string_view &shaderContent) {
-    const char *source = shaderContent.data();
+GLuint Program::createShader(const GLenum type,
+                             const std::string_view& shaderContent) {
+  const char* source = shaderContent.data();
 
-    const GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &source, nullptr);
-    glCompileShader(shader);
+  const GLuint shader = glCreateShader(type);
+  glShaderSource(shader, 1, &source, nullptr);
+  glCompileShader(shader);
 
-    GLint success = 0;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        GLint logLength = 0;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-        std::string infoLog(logLength > 0 ? logLength : 1, '\0');
-        glGetShaderInfoLog(shader, logLength, nullptr, infoLog.data());
+  GLint success = 0;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    GLint logLength = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+    std::string infoLog(logLength > 0 ? logLength : 1, '\0');
+    glGetShaderInfoLog(shader, logLength, nullptr, infoLog.data());
 
-        glDeleteShader(shader);
+    glDeleteShader(shader);
 
-        const char *shaderTypeStr = (type == GL_VERTEX_SHADER) ? "Vertex" : "Fragment";
-        throw std::runtime_error(std::format("{} shader compilation error: {}",
-                                             shaderTypeStr, infoLog));
-    }
-    return shader;
+    const char* shaderTypeStr = (type == GL_VERTEX_SHADER)
+                                  ? "Vertex"
+                                  : "Fragment";
+    throw std::runtime_error(std::format("{} shader compilation error: {}",
+                                         shaderTypeStr, infoLog));
+  }
+  return shader;
 }
 
-GLint Program::getUniformLocation(const std::string &name) const {
-    if (const auto it = this->uniforms.find(name); it != this->uniforms.end()) {
-        return it->second;
-    }
+GLint Program::getUniformLocation(const std::string& name) const {
+  if (const auto it = this->uniforms.find(name); it != this->uniforms.end()) {
+    return it->second;
+  }
 
-    const GLint location = glGetUniformLocation(this->id, name.c_str());
-    if (location == -1) {
-        std::cerr << std::format("Warning: Uniform '{}' not found or optimized out.\n", name);
-    }
+  const GLint location = glGetUniformLocation(this->id, name.c_str());
+  if (location == -1) {
+    std::cerr << std::format(
+        "Warning: Uniform '{}' not found or optimized out.\n", name);
+  }
 
-    this->uniforms.emplace(name, location);
-    return location;
+  this->uniforms.emplace(name, location);
+  return location;
 }
 
 void Program::use() const {
-    glUseProgram(this->id);
+  glUseProgram(this->id);
 }
 
-void Program::setBool(const std::string &name, const bool value) const {
-    setInt(name, value ? 1 : 0);
+void Program::setBool(const std::string& name, const bool value) const {
+  setInt(name, value ? 1 : 0);
 }
 
-void Program::setInt(const std::string &name, const int value) const {
-    glProgramUniform1i(this->id, getUniformLocation(name), value);
+void Program::setInt(const std::string& name, const int value) const {
+  glProgramUniform1i(this->id, getUniformLocation(name), value);
 }
 
-void Program::setUInt(const std::string &name, const uint32_t value) const {
-    glProgramUniform1ui(this->id, getUniformLocation(name), value);
+void Program::setUInt(const std::string& name, const uint32_t value) const {
+  glProgramUniform1ui(this->id, getUniformLocation(name), value);
 }
 
-void Program::setFloat(const std::string &name, const float value) const {
-    glProgramUniform1f(this->id, getUniformLocation(name), value);
+void Program::setFloat(const std::string& name, const float value) const {
+  glProgramUniform1f(this->id, getUniformLocation(name), value);
 }
 
-void Program::set3fv(const std::string &name, const glm::vec3 value) const {
-    glProgramUniform3fv(this->id, getUniformLocation(name), 1, glm::value_ptr(value));
+void Program::set3fv(const std::string& name, const glm::vec3 value) const {
+  glProgramUniform3fv(this->id, getUniformLocation(name), 1,
+                      glm::value_ptr(value));
 }
 
-void Program::setMatx4fv(const std::string &name, const glm::mat4 &value) const {
-    glProgramUniformMatrix4fv(this->id, getUniformLocation(name),
-                              1, GL_FALSE,
-                              glm::value_ptr(value));
+void Program::setMatx4fv(const std::string& name,
+                         const glm::mat4& value) const {
+  glProgramUniformMatrix4fv(this->id, getUniformLocation(name),
+                            1, GL_FALSE,
+                            glm::value_ptr(value));
 }
