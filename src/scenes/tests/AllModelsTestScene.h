@@ -10,8 +10,10 @@
 
 class AllModelsTestScene : public Scene {
 public:
-  AllModelsTestScene(int windowWidth, int windowHeight,
-                     size_t initialIndex = 0);
+  AllModelsTestScene(
+      int windowWidth,
+      int windowHeight,
+      size_t initialIndex = 0);
 
   ~AllModelsTestScene() override = default;
 
@@ -23,8 +25,13 @@ public:
 
   bool loadModel(size_t index);
 
-  [[nodiscard]] int getCurrentModelIndex() const { return currentModelIndex; }
-  [[nodiscard]] const Model* getModel() const { return model.get(); }
+  [[nodiscard]] int getCurrentModelIndex() const {
+    return currentModelIndex;
+  }
+
+  [[nodiscard]] const Model* getModel() const {
+    return model.get();
+  }
 
 private:
   const Program program;

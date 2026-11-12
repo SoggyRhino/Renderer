@@ -1,6 +1,5 @@
 BasedOnStyle: Google
 
-
 # --- Modern C++ Sorting ---
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup

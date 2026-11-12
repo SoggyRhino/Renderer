@@ -14,8 +14,13 @@ public:
 
   void update(double dt, const InputState& input);
 
-  [[nodiscard]] Camera& getCamera() { return camera; }
-  [[nodiscard]] const Camera& getCamera() const { return camera; }
+  [[nodiscard]] Camera& getCamera() {
+    return camera;
+  }
+
+  [[nodiscard]] const Camera& getCamera() const {
+    return camera;
+  }
 
 private:
   Camera camera;

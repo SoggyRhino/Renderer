@@ -11,8 +11,9 @@ Program::~Program() {
   }
 }
 
-Program::Program(const std::string_view& vertShader,
-                 const std::string_view& fragShader) {
+Program::Program(
+    const std::string_view& vertShader,
+    const std::string_view& fragShader) {
   const Shader vert(GL_VERTEX_SHADER, vertShader);
   const Shader frag(GL_FRAGMENT_SHADER, fragShader);
 
@@ -35,8 +36,9 @@ Program::Program(const std::string_view& vertShader,
   }
 }
 
-GLuint Program::createShader(const GLenum type,
-                             const std::string_view& shaderContent) {
+GLuint Program::createShader(
+    const GLenum type,
+    const std::string_view& shaderContent) {
   const char* source = shaderContent.data();
 
   const GLuint shader = glCreateShader(type);
@@ -56,8 +58,11 @@ GLuint Program::createShader(const GLenum type,
     const char* shaderTypeStr = (type == GL_VERTEX_SHADER)
                                   ? "Vertex"
                                   : "Fragment";
-    throw std::runtime_error(std::format("{} shader compilation error: {}",
-                                         shaderTypeStr, infoLog));
+    throw std::runtime_error(
+        std::format(
+            "{} shader compilation error: {}",
+            shaderTypeStr,
+            infoLog));
   }
   return shader;
 }
@@ -70,7 +75,8 @@ GLint Program::getUniformLocation(const std::string& name) const {
   const GLint location = glGetUniformLocation(this->id, name.c_str());
   if (location == -1) {
     std::cerr << std::format(
-        "Warning: Uniform '{}' not found or optimized out.\n", name);
+        "Warning: Uniform '{}' not found or optimized out.\n",
+        name);
   }
 
   this->uniforms.emplace(name, location);
@@ -98,13 +104,20 @@ void Program::setFloat(const std::string& name, const float value) const {
 }
 
 void Program::set3fv(const std::string& name, const glm::vec3 value) const {
-  glProgramUniform3fv(this->id, getUniformLocation(name), 1,
-                      glm::value_ptr(value));
+  glProgramUniform3fv(
+      this->id,
+      getUniformLocation(name),
+      1,
+      glm::value_ptr(value));
 }
 
-void Program::setMatx4fv(const std::string& name,
-                         const glm::mat4& value) const {
-  glProgramUniformMatrix4fv(this->id, getUniformLocation(name),
-                            1, GL_FALSE,
-                            glm::value_ptr(value));
+void Program::setMatx4fv(
+    const std::string& name,
+    const glm::mat4& value) const {
+  glProgramUniformMatrix4fv(
+      this->id,
+      getUniformLocation(name),
+      1,
+      GL_FALSE,
+      glm::value_ptr(value));
 }

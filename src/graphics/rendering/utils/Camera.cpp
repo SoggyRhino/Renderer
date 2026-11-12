@@ -33,16 +33,23 @@ void Camera::updateMouse(const float x, const float y) {
   lastY = y;
 }
 
-void Camera::updateControls(const double deltaTime,
-                            const uint8_t activeControls) {
+void Camera::updateControls(
+    const double deltaTime,
+    const uint8_t activeControls) {
   glm::vec3 moveDirection(0.0f);
 
-  if (activeControls & FORWARD) moveDirection += glm::vec3(0.0f, 0.0f, -1.0f);
-  if (activeControls & BACKWARD) moveDirection += glm::vec3(0.0f, 0.0f, 1.0f);
-  if (activeControls & RIGHT) moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
-  if (activeControls & LEFT) moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
-  if (activeControls & UP) moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
-  if (activeControls & DOWN) moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
+  if (activeControls & FORWARD)
+    moveDirection += glm::vec3(0.0f, 0.0f, -1.0f);
+  if (activeControls & BACKWARD)
+    moveDirection += glm::vec3(0.0f, 0.0f, 1.0f);
+  if (activeControls & RIGHT)
+    moveDirection += glm::vec3(1.0f, 0.0f, 0.0f);
+  if (activeControls & LEFT)
+    moveDirection += glm::vec3(-1.0f, 0.0f, 0.0f);
+  if (activeControls & UP)
+    moveDirection += glm::vec3(0.0f, 1.0f, 0.0f);
+  if (activeControls & DOWN)
+    moveDirection += glm::vec3(0.0f, -1.0f, 0.0f);
 
   if (glm::length(moveDirection) > 0.0f) {
     moveDirection = glm::normalize(moveDirection);

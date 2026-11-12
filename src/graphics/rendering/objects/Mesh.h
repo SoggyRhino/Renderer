@@ -10,8 +10,10 @@
 
 class Mesh {
 public:
-  Mesh(const tg3_model& model, const tg3_primitive& prim,
-       const Texture* baseColor = nullptr);
+  Mesh(
+      const tg3_model& model,
+      const tg3_primitive& prim,
+      const Texture* baseColor = nullptr);
   ~Mesh() = default;
 
   Mesh(const Mesh&) = delete;
@@ -22,9 +24,17 @@ public:
 
   void draw(const Program& program) const;
 
-  [[nodiscard]] GLuint getVAO() const { return VAO.id(); }
-  [[nodiscard]] GLsizei getCount() const { return count; }
-  [[nodiscard]] bool getHasIndices() const { return hasIndices; }
+  [[nodiscard]] GLuint getVAO() const {
+    return VAO.id();
+  }
+
+  [[nodiscard]] GLsizei getCount() const {
+    return count;
+  }
+
+  [[nodiscard]] bool getHasIndices() const {
+    return hasIndices;
+  }
 
 private:
   VertexArray VAO;

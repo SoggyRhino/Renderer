@@ -4,8 +4,9 @@
 
 #include "shaders.h"
 
-SquareTestScene::SquareTestScene(const uint32_t windowWidth,
-                                 const uint32_t windowHeight)
+SquareTestScene::SquareTestScene(
+    const uint32_t windowWidth,
+    const uint32_t windowHeight)
   : Scene(windowWidth, windowHeight), program(SIMPLE_2D_VERT, SIMPLE_2D_FRAG) {
   constexpr float vertices[] = {
       -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
@@ -22,8 +23,13 @@ SquareTestScene::SquareTestScene(const uint32_t windowWidth,
   VBO.setData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   VAO.setAttributePointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
-  VAO.setAttributePointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                          reinterpret_cast<void*>(2 * sizeof(float)));
+  VAO.setAttributePointer(
+      1,
+      3,
+      GL_FLOAT,
+      GL_FALSE,
+      5 * sizeof(float),
+      reinterpret_cast<void*>(2 * sizeof(float)));
 
   VAO.unbind();
 }

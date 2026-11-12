@@ -20,11 +20,25 @@ public:
   void bind(GLuint unit = 0) const;
   void unbind(GLuint unit = 0) const;
 
-  [[nodiscard]] GLuint id() const { return id_; }
-  [[nodiscard]] int getWidth() const { return width_; }
-  [[nodiscard]] int getHeight() const { return height_; }
-  [[nodiscard]] int getChannels() const { return channels_; }
-  [[nodiscard]] bool isValid() const { return id_ != 0; }
+  [[nodiscard]] GLuint id() const {
+    return id_;
+  }
+
+  [[nodiscard]] int getWidth() const {
+    return width_;
+  }
+
+  [[nodiscard]] int getHeight() const {
+    return height_;
+  }
+
+  [[nodiscard]] int getChannels() const {
+    return channels_;
+  }
+
+  [[nodiscard]] bool isValid() const {
+    return id_ != 0;
+  }
 
 private:
   void initGL(const unsigned char* data);

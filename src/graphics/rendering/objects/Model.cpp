@@ -15,20 +15,28 @@ Model::Model(const std::string& filename) {
 
   tg3_model model = {.arena_ = nullptr};
 
-  const int err = tg3_parse_file(&model, &errors, filename.c_str(),
-                                 filename.size(), &opts);
+  const int err = tg3_parse_file(
+      &model,
+      &errors,
+      filename.c_str(),
+      filename.size(),
+      &opts);
   if (err != 0) {
     std::string details;
     for (uint32_t i = 0; i < errors.count; ++i) {
-      if (i > 0) details += " | ";
+      if (i > 0)
+        details += " | ";
       details += errors.entries[i].message
                    ? errors.entries[i].message
                    : "Unknown error";
     }
     tg3_error_stack_free(&errors);
-    throw std::runtime_error(std::format(
-        "Could not load GLTF model '{}' (Code: {}): {}",
-        filename, err, details.empty() ? "no details" : details));
+    throw std::runtime_error(
+        std::format(
+            "Could not load GLTF model '{}' (Code: {}): {}",
+            filename,
+            err,
+            details.empty() ? "no details" : details));
   }
 
   std::filesystem::path baseDir = std::filesystem::path(filename).parent_path();
@@ -49,8 +57,9 @@ Model::Model(const std::string& filename) {
           buffers_count) {
         const tg3_buffer& buf = model.buffers[view.buffer];
         if (buf.data.data) {
-          tex = std::make_unique<Texture>(buf.data.data + view.byte_offset,
-                                          view.byte_length);
+          tex = std::make_unique<Texture>(
+              buf.data.data + view.byte_offset,
+              view.byte_length);
         }
       }
     }

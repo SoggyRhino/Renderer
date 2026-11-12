@@ -29,8 +29,10 @@ GLint getNumComponents(const int32_t tg3Type) {
 }
 }
 
-Mesh::Mesh(const tg3_model& model, const tg3_primitive& prim,
-           const Texture* baseColor)
+Mesh::Mesh(
+    const tg3_model& model,
+    const tg3_primitive& prim,
+    const Texture* baseColor)
   : baseColorTexture(baseColor) {
   mode = (prim.mode >= 0) ? static_cast<GLenum>(prim.mode) : GL_TRIANGLES;
 
@@ -39,10 +41,12 @@ Mesh::Mesh(const tg3_model& model, const tg3_primitive& prim,
   GLsizei vertexCount = 0;
 
   for (uint32_t i = 0; i < prim.attributes_count; ++i) {
-    const std::string name(prim.attributes[i].key.data,
-                           prim.attributes[i].key.len);
+    const std::string name(
+        prim.attributes[i].key.data,
+        prim.attributes[i].key.len);
     const auto loc = kAttributeLocations.find(name);
-    if (loc == kAttributeLocations.end()) continue;
+    if (loc == kAttributeLocations.end())
+      continue;
 
     if (prim.attributes[i].value < 0 ||
         static_cast<uint32_t>(prim.attributes[i].value) >= model.
@@ -68,14 +72,19 @@ Mesh::Mesh(const tg3_model& model, const tg3_primitive& prim,
     }
 
     const tg3_buffer* buf = &model.buffers[view->buffer];
-    if (!buf->data.data) continue;
+    if (!buf->data.data)
+      continue;
 
     const GLint numComponents = getNumComponents(acc->type);
-    if (numComponents == 0) continue;
+    if (numComponents == 0)
+      continue;
 
     Buffer& vbo = VBOs.emplace_back();
-    vbo.setData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(view->byte_length),
-                buf->data.data + view->byte_offset, GL_STATIC_DRAW);
+    vbo.setData(
+        GL_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(view->byte_length),
+        buf->data.data + view->byte_offset,
+        GL_STATIC_DRAW);
 
     VAO.setAttributePointer(
         loc->second,
@@ -106,7 +115,8 @@ Mesh::Mesh(const tg3_model& model, const tg3_primitive& prim,
           EBO->setData(
               GL_ELEMENT_ARRAY_BUFFER,
               static_cast<GLsizeiptr>(idxView->byte_length),
-              idxBuf->data.data + idxView->byte_offset, GL_STATIC_DRAW);
+              idxBuf->data.data + idxView->byte_offset,
+              GL_STATIC_DRAW);
         }
       }
     }
@@ -120,7 +130,8 @@ Mesh::Mesh(const tg3_model& model, const tg3_primitive& prim,
 }
 
 void Mesh::draw(const Program& program) const {
-  if (count == 0) return;
+  if (count == 0)
+    return;
 
   const bool hasTex = baseColorTexture && baseColorTexture->isValid();
   if (hasTex) {
@@ -132,8 +143,11 @@ void Mesh::draw(const Program& program) const {
   }
 
   if (hasIndices) {
-    VAO.drawElements(mode, count, indexType,
-                     reinterpret_cast<void*>(indexOffset));
+    VAO.drawElements(
+        mode,
+        count,
+        indexType,
+        reinterpret_cast<void*>(indexOffset));
   } else {
     VAO.drawArrays(mode, 0, count);
   }

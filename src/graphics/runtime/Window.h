@@ -30,10 +30,17 @@ public:
 
   [[nodiscard]] bool shouldClose() const;
 
-  [[nodiscard]] int getWidth() const { return width; }
-  [[nodiscard]] int getHeight() const { return height; }
+  [[nodiscard]] int getWidth() const {
+    return width;
+  }
 
-  [[nodiscard]] const InputState& input() const { return inputState; }
+  [[nodiscard]] int getHeight() const {
+    return height;
+  }
+
+  [[nodiscard]] const InputState& input() const {
+    return inputState;
+  }
 
   void setShowCursor(bool show) const;
 
@@ -54,12 +61,18 @@ private:
   std::function<void(Key, KeyAction)> onKey;
   std::function<bool()> capturesKeyboard;
 
-  [[nodiscard]] GLFWwindow* nativeHandle() const { return window; }
+  [[nodiscard]] GLFWwindow* nativeHandle() const {
+    return window;
+  }
 
   static void logError(int error, const char* description);
   static void resize(GLFWwindow* window, int width, int height);
-  static void key(GLFWwindow* window, int key, int scancode, int action,
-                  int mods);
+  static void key(
+      GLFWwindow* window,
+      int key,
+      int scancode,
+      int action,
+      int mods);
 
   friend class ImGuiLayer;
 };

@@ -1,15 +1,14 @@
 #include <chrono>
 #include <thread>
 
-#include "scenes/tests/AllModelsTestScene.h"
 #include "scenes/tests/GLTFTestScene.h"
 #include "graphics/rendering/wrappers/RenderState.h"
 #include "graphics/runtime/ImGuiLayer.h"
 #include "graphics/runtime/Window.h"
 
-int main(int argc, const char* argv[]) {
+int main(int argc, const char* /*argv*/[]) {
   Window window{};
-  ImGuiLayer ui{window};
+  ImGuiLayer const ui{window};
 
   GLTFTestScene scene{window.getWidth(), window.getHeight(),
                       "models/BarramundiFish/BarramundiFish.gltf"};
@@ -32,7 +31,7 @@ int main(int argc, const char* argv[]) {
         currentFrame - lastFrame).count();
     lastFrame = currentFrame;
 
-    if (const double sleep = 1.0f / 120.0f - deltaTime; sleep > 0) {
+    if (const double sleep = (1.0F / 120.0F) - deltaTime; sleep > 0) {
       std::this_thread::sleep_for(
           std::chrono::milliseconds(static_cast<int>(sleep * 1000)));
     }

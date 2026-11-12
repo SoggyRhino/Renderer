@@ -13,11 +13,12 @@ Window::Window(const WindowConfig& config) :
     const char* description = nullptr;
     int errorCode = glfwGetError(&description);
 
-    throw std::runtime_error(std::format(
-        "Could not init GLFW (Code: 0x{:08X}, Reason: {})",
-        errorCode,
-        description ? description : "Unknown error"
-        ));
+    throw std::runtime_error(
+        std::format(
+            "Could not init GLFW (Code: 0x{:08X}, Reason: {})",
+            errorCode,
+            description ? description : "Unknown error"
+            ));
   }
 
   glfwSetErrorCallback(logError);
@@ -28,21 +29,26 @@ Window::Window(const WindowConfig& config) :
   glfwWindowHint(GLFW_RESIZABLE, config.resizable ? GLFW_TRUE : GLFW_FALSE);
   glfwWindowHint(GLFW_DECORATED, config.decorated ? GLFW_TRUE : GLFW_FALSE);
 
-  window = glfwCreateWindow(this->width, this->height, title.c_str(), nullptr,
-                            nullptr);
+  window = glfwCreateWindow(
+      this->width,
+      this->height,
+      title.c_str(),
+      nullptr,
+      nullptr);
 
   if (!window) {
     const char* description = nullptr;
     int errorCode = glfwGetError(&description);
 
-    throw std::runtime_error(std::format(
-        "Could not create Window \"{}\" ({}x{}) [Code: 0x{:08X}, Reason: {}]",
-        this->title,
-        this->width,
-        this->height,
-        errorCode,
-        description ? description : "Unknown error"
-        ));
+    throw std::runtime_error(
+        std::format(
+            "Could not create Window \"{}\" ({}x{}) [Code: 0x{:08X}, Reason: {}]",
+            this->title,
+            this->width,
+            this->height,
+            errorCode,
+            description ? description : "Unknown error"
+            ));
   }
 
   glfwMakeContextCurrent(window);
@@ -78,8 +84,10 @@ bool Window::shouldClose() const {
 }
 
 void Window::setShowCursor(const bool show) const {
-  glfwSetInputMode(window, GLFW_CURSOR,
-                   show ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(
+      window,
+      GLFW_CURSOR,
+      show ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 }
 
 void Window::setResizeCallback(std::function<void(int, int)> callback) {
@@ -113,8 +121,12 @@ void Window::resize(GLFWwindow* window, const int w, const int h) {
   }
 }
 
-void Window::key(GLFWwindow* window, const int glfwKey, const int,
-                 const int glfwAction, const int) {
+void Window::key(
+    GLFWwindow* window,
+    const int glfwKey,
+    const int,
+    const int glfwAction,
+    const int) {
   auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window));
   if (!self) {
     return;

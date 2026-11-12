@@ -15,9 +15,10 @@ ImGuiLayer::ImGuiLayer(Window& window) : window(window) {
   ImGui_ImplGlfw_InitForOpenGL(window.nativeHandle(), true);
   ImGui_ImplOpenGL3_Init("#version 460");
 
-  window.setKeyboardCaptureQuery([] {
-    return ImGui::GetIO().WantCaptureKeyboard;
-  });
+  window.setKeyboardCaptureQuery(
+      [] {
+        return ImGui::GetIO().WantCaptureKeyboard;
+      });
 }
 
 ImGuiLayer::~ImGuiLayer() {

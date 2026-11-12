@@ -35,7 +35,9 @@ private:
     heldKeys[static_cast<size_t>(key)] = isHeld;
   }
 
-  void clear() { heldKeys.fill(false); }
+  void clear() {
+    heldKeys.fill(false);
+  }
 
   friend class Window;
 };

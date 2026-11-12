@@ -7,13 +7,17 @@
 #include "shaders.h"
 #include "graphics/rendering/wrappers/RenderState.h"
 
-GLTFTestScene::GLTFTestScene(const int windowWidth, const int windowHeight,
-                             const std::string& filename) : Scene(windowWidth,
-    windowHeight),
-  program(MODEL_VERT, MODEL_FRAG),
-  model(Model{filename}),
-  cameraController(windowWidth, windowHeight) {
-  RenderState::apply({
+GLTFTestScene::GLTFTestScene(
+    const int windowWidth,
+    const int windowHeight,
+    const std::string& filename) : Scene(
+                                       windowWidth,
+                                       windowHeight),
+                                   program(MODEL_VERT, MODEL_FRAG),
+                                   model(Model{filename}),
+                                   cameraController(windowWidth, windowHeight) {
+  RenderState::apply(
+  {
       .clearColor = {0.1f, 0.1f, 0.15f, 1.0f},
       .depthTest = true,
       .blend = true,
@@ -48,8 +52,9 @@ void GLTFTestScene::render() const {
 
   program.setMatx4fv("model", rotationMatrix);
   program.setMatx4fv("view", cameraController.getCamera().getViewMatrix());
-  program.setMatx4fv("projection",
-                     cameraController.getCamera().getProjectionMatrix());
+  program.setMatx4fv(
+      "projection",
+      cameraController.getCamera().getProjectionMatrix());
 
   model.draw(program);
 }

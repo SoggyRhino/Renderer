@@ -40,9 +40,13 @@ public:
     glBindVertexArray(0);
   }
 
-  void setAttributePointer(GLuint index, GLint size, GLenum type,
-                           GLboolean normalized,
-                           GLsizei stride, const void* pointer) const {
+  void setAttributePointer(
+      GLuint index,
+      GLint size,
+      GLenum type,
+      GLboolean normalized,
+      GLsizei stride,
+      const void* pointer) const {
     glVertexAttribPointer(index, size, type, normalized, stride, pointer);
     glEnableVertexAttribArray(index);
   }
@@ -53,14 +57,19 @@ public:
     unbind();
   }
 
-  void drawElements(GLenum mode, GLsizei count, GLenum type,
-                    const void* indices = nullptr) const {
+  void drawElements(
+      GLenum mode,
+      GLsizei count,
+      GLenum type,
+      const void* indices = nullptr) const {
     bind();
     glDrawElements(mode, count, type, indices);
     unbind();
   }
 
-  [[nodiscard]] GLuint id() const { return id_; }
+  [[nodiscard]] GLuint id() const {
+    return id_;
+  }
 
 private:
   GLuint id_ = 0;
@@ -72,8 +81,11 @@ public:
     glGenBuffers(1, &id_);
   }
 
-  Buffer(GLenum target, GLsizeiptr size, const void* data,
-         GLenum usage = GL_STATIC_DRAW) {
+  Buffer(
+      GLenum target,
+      GLsizeiptr size,
+      const void* data,
+      GLenum usage = GL_STATIC_DRAW) {
     glGenBuffers(1, &id_);
     setData(target, size, data, usage);
   }
@@ -110,13 +122,18 @@ public:
     glBindBuffer(target, 0);
   }
 
-  void setData(GLenum target, GLsizeiptr size, const void* data,
-               GLenum usage = GL_STATIC_DRAW) const {
+  void setData(
+      GLenum target,
+      GLsizeiptr size,
+      const void* data,
+      GLenum usage = GL_STATIC_DRAW) const {
     glBindBuffer(target, id_);
     glBufferData(target, size, data, usage);
   }
 
-  [[nodiscard]] GLuint id() const { return id_; }
+  [[nodiscard]] GLuint id() const {
+    return id_;
+  }
 
 private:
   GLuint id_ = 0;

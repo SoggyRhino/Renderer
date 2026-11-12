@@ -21,7 +21,9 @@ public:
 
   void draw(const Program& program) const;
 
-  [[nodiscard]] const std::vector<Mesh>& getMeshes() const { return meshes; }
+  [[nodiscard]] const std::vector<Mesh>& getMeshes() const {
+    return meshes;
+  }
 
 private:
   std::vector<std::unique_ptr<Texture>> textures;

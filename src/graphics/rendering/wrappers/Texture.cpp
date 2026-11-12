@@ -8,11 +8,17 @@
 
 Texture::Texture(const std::filesystem::path& filePath) {
   stbi_set_flip_vertically_on_load(false);
-  unsigned char* data = stbi_load(filePath.string().c_str(), &width_, &height_,
-                                  &channels_, 0);
+  unsigned char* data = stbi_load(
+      filePath.string().c_str(),
+      &width_,
+      &height_,
+      &channels_,
+      0);
   if (!data) {
-    std::cerr << std::format("Warning: Failed to load texture '{}': {}\n",
-                             filePath.string(), stbi_failure_reason());
+    std::cerr << std::format(
+        "Warning: Failed to load texture '{}': {}\n",
+        filePath.string(),
+        stbi_failure_reason());
     return;
   }
   initGL(data);
@@ -20,12 +26,17 @@ Texture::Texture(const std::filesystem::path& filePath) {
 }
 
 Texture::Texture(const unsigned char* bufferData, size_t bufferSize) {
-  if (!bufferData || bufferSize == 0) return;
+  if (!bufferData || bufferSize == 0)
+    return;
 
   stbi_set_flip_vertically_on_load(false);
-  unsigned char* data = stbi_load_from_memory(bufferData,
-                                              static_cast<int>(bufferSize),
-                                              &width_, &height_, &channels_, 0);
+  unsigned char* data = stbi_load_from_memory(
+      bufferData,
+      static_cast<int>(bufferSize),
+      &width_,
+      &height_,
+      &channels_,
+      0);
   if (!data) {
     std::cerr << std::format(
         "Warning: Failed to load texture from memory: {}\n",
@@ -93,8 +104,9 @@ void Texture::initGL(const unsigned char* data) {
       dataFormat = GL_RGBA;
       break;
     default:
-      std::cerr << std::format("Warning: Unsupported channel count: {}\n",
-                               channels_);
+      std::cerr << std::format(
+          "Warning: Unsupported channel count: {}\n",
+          channels_);
       return;
   }
 
@@ -103,23 +115,34 @@ void Texture::initGL(const unsigned char* data) {
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width_, height_, 0, dataFormat,
-               GL_UNSIGNED_BYTE, data);
+  glTexImage2D(
+      GL_TEXTURE_2D,
+      0,
+      internalFormat,
+      width_,
+      height_,
+      0,
+      dataFormat,
+      GL_UNSIGNED_BYTE,
+      data);
   glGenerateMipmap(GL_TEXTURE_2D);
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(
+      GL_TEXTURE_2D,
+      GL_TEXTURE_MIN_FILTER,
+      GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::bind(GLuint unit) const {
-  if (id_ == 0) return;
+  if (id_ == 0)
+    return;
   glActiveTexture(GL_TEXTURE0 + unit);
   glBindTexture(GL_TEXTURE_2D, id_);
 }

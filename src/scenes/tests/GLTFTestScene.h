@@ -8,8 +8,10 @@
 
 class GLTFTestScene : public Scene {
 public:
-  explicit GLTFTestScene(int windowWidth, int windowHeight,
-                         const std::string& filename);
+  explicit GLTFTestScene(
+      int windowWidth,
+      int windowHeight,
+      const std::string& filename);
 
   void updateInput(double dt, const InputState& input) override;
 

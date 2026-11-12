@@ -20,9 +20,10 @@ void AllModelsTestScene::initModelNames() {
   }
 }
 
-AllModelsTestScene::AllModelsTestScene(const int windowWidth,
-                                       const int windowHeight,
-                                       size_t initialIndex)
+AllModelsTestScene::AllModelsTestScene(
+    const int windowWidth,
+    const int windowHeight,
+    size_t initialIndex)
   : Scene(windowWidth, windowHeight), program(MODEL_VERT, MODEL_FRAG) {
   initModelNames();
   if constexpr (!Models::all.empty()) {
@@ -48,8 +49,10 @@ bool AllModelsTestScene::loadModel(const size_t index) {
   } catch (const std::exception& e) {
     model.reset();
     loadFailed = true;
-    statusMessage = std::format("Failed to load '{}': {}", displayName,
-                                e.what());
+    statusMessage = std::format(
+        "Failed to load '{}': {}",
+        displayName,
+        e.what());
     return false;
   }
 }
@@ -67,10 +70,15 @@ void AllModelsTestScene::update(const double dt) {
         );
   }
 
-  viewMatrix = glm::lookAt(cameraPos, glm::vec3(0.0f, 0.0f, 0.0f),
-                           glm::vec3(0.0f, 1.0f, 0.0f));
-  projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f,
-                                      0.1f, 100.0f);
+  viewMatrix = glm::lookAt(
+      cameraPos,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 1.0f, 0.0f));
+  projectionMatrix = glm::perspective(
+      glm::radians(45.0f),
+      800.0f / 600.0f,
+      0.1f,
+      100.0f);
 }
 
 void AllModelsTestScene::render() const {
@@ -95,8 +103,11 @@ void AllModelsTestScene::renderUI() {
   ImGui::Text("Model Selector");
 
   ImGui::SetNextItemWidth(250.0f);
-  ImGui::InputTextWithHint("##filter", "Filter models...", filterBuf,
-                           sizeof(filterBuf));
+  ImGui::InputTextWithHint(
+      "##filter",
+      "Filter models...",
+      filterBuf,
+      sizeof(filterBuf));
   if (filterBuf[0] != '\0') {
     ImGui::SameLine();
     if (ImGui::SmallButton("Clear")) {
@@ -113,8 +124,10 @@ void AllModelsTestScene::renderUI() {
     for (int i = 0; i < static_cast<int>(Models::all.size()); ++i) {
       if (filterBuf[0] != '\0') {
         auto it = std::search(
-            modelNames[i].begin(), modelNames[i].end(),
-            filterBuf, filterBuf + std::strlen(filterBuf),
+            modelNames[i].begin(),
+            modelNames[i].end(),
+            filterBuf,
+            filterBuf + std::strlen(filterBuf),
             [](const char ch1, const char ch2) {
               return std::tolower(static_cast<unsigned char>(ch1)) ==
                      std::tolower(static_cast<unsigned char>(ch2));
@@ -150,8 +163,10 @@ void AllModelsTestScene::renderUI() {
   ImGui::Text("(%d of %zu)", currentModelIndex + 1, Models::all.size());
 
   if (loadFailed) {
-    ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "%s",
-                       statusMessage.c_str());
+    ImGui::TextColored(
+        ImVec4(1.0f, 0.4f, 0.4f, 1.0f),
+        "%s",
+        statusMessage.c_str());
   } else if (model) {
     ImGui::TextDisabled("Meshes: %zu", model->getMeshes().size());
   }
@@ -162,8 +177,11 @@ void AllModelsTestScene::renderUI() {
 
   ImGui::Separator();
   ImGui::Text("Camera Controls");
-  ImGui::SliderFloat3("Camera Position (XYZ)", glm::value_ptr(cameraPos),
-                      -20.0f, 20.0f);
+  ImGui::SliderFloat3(
+      "Camera Position (XYZ)",
+      glm::value_ptr(cameraPos),
+      -20.0f,
+      20.0f);
   if (ImGui::Button("Reset Camera")) {
     cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
   }
