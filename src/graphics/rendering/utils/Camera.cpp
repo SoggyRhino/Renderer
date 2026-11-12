@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
 
-Camera::Camera(const uint32_t height, const uint32_t width) :
+Camera::Camera(const uint32_t width, const uint32_t height) :
   width(static_cast<float>(width)),
   height(static_cast<float>(height)),
   lastX(static_cast<float>(width) / 2.0f),

@@ -36,8 +36,10 @@ add_executable(${PROJECT_NAME}
         src/graphics/rendering/wrappers/RenderState.h
         src/graphics/rendering/wrappers/Program.cpp
         src/graphics/rendering/wrappers/Program.h
-        src/graphics/rendering/wrappers/Camera.cpp
-        src/graphics/rendering/wrappers/Camera.h
+        src/graphics/rendering/utils/Camera.cpp
+        src/graphics/rendering/utils/Camera.h
+        src/scenes/components/CameraController.cpp
+        src/scenes/components/CameraController.h
         src/scenes/Scene.h
         src/scenes/tests/SquareTestScene.cpp
         src/scenes/tests/SquareTestScene.h

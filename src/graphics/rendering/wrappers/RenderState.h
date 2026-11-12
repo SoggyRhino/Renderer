@@ -30,7 +30,10 @@ public:
   }
 
   static void setDepthTest(const bool enabled) {
-    enabled ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+    if (enabled)
+      glEnable(GL_DEPTH_TEST);
+    else
+      glDisable(GL_DEPTH_TEST);
   }
 
   static void setBlend(const bool enabled) {
@@ -43,7 +46,10 @@ public:
   }
 
   static void setCullFace(const bool enabled) {
-    enabled ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
+    if (enabled)
+      glEnable(GL_CULL_FACE);
+    else
+      glDisable(GL_CULL_FACE);
   }
 
   static void setWireframe(const bool enabled) {

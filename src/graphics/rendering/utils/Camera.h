@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include "glm/fwd.hpp"
 #include "glm/vec3.hpp"
 
@@ -16,7 +17,7 @@ public:
     SPRINT = 1 << 6,
   };
 
-  Camera(uint32_t height, uint32_t width);
+  Camera(uint32_t width, uint32_t height);
 
   void updateWindowDimensions(float width, float height);
 

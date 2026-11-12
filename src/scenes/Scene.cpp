@@ -2,8 +2,7 @@
 
 Scene::Scene(const int windowWidth, const int windowHeight) :
   windowWidth(windowWidth),
-  windowHeight(windowHeight),
-  camera(windowWidth, windowHeight) {
+  windowHeight(windowHeight) {
 }
 
 void Scene::handleMouseMovement(float x, float y) {
@@ -30,6 +29,4 @@ void Scene::onKeyEvent(const Key key, const KeyAction action) {
 void Scene::handleWindowResize(const int width, const int height) {
   windowWidth = width;
   windowHeight = height;
-  camera.updateWindowDimensions(static_cast<float>(width),
-                                static_cast<float>(height));
 }

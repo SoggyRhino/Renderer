@@ -2,7 +2,6 @@
 #include <functional>
 #include <unordered_map>
 
-#include "graphics/rendering/wrappers/Camera.h"
 #include "graphics/runtime/Input.h"
 
 class Scene {
@@ -28,15 +27,12 @@ public:
 
   virtual void onKeyEvent(Key key, KeyAction action);
 
-  void handleWindowResize(int width, int height);
+  virtual void handleWindowResize(int width, int height);
 
 protected:
   int windowWidth{}, windowHeight{};
   bool showUI = true;
   bool showCursor = true;
-  uint8_t controls{0};
-  Camera camera;
-
   std::unordered_map<Key, std::function<void()>> callbacks;
 
   void bind(const Key key, std::function<void()> callback) {

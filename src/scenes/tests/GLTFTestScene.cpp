@@ -11,7 +11,8 @@ GLTFTestScene::GLTFTestScene(const int windowWidth, const int windowHeight,
                              const std::string& filename) : Scene(windowWidth,
     windowHeight),
   program(MODEL_VERT, MODEL_FRAG),
-  model(Model{filename}) {
+  model(Model{filename}),
+  cameraController(windowWidth, windowHeight) {
   RenderState::apply({
       .clearColor = {0.1f, 0.1f, 0.15f, 1.0f},
       .depthTest = true,
@@ -21,16 +22,12 @@ GLTFTestScene::GLTFTestScene(const int windowWidth, const int windowHeight,
 }
 
 void GLTFTestScene::updateInput(const double dt, const InputState& input) {
-  uint8_t controls = Camera::NONE;
+  cameraController.update(dt, input);
+}
 
-  if (input.held(Key::W)) controls |= Camera::FORWARD;
-  if (input.held(Key::S)) controls |= Camera::BACKWARD;
-  if (input.held(Key::A)) controls |= Camera::LEFT;
-  if (input.held(Key::D)) controls |= Camera::RIGHT;
-  if (input.held(Key::Space)) controls |= Camera::UP;
-  if (input.held(Key::LeftShift)) controls |= Camera::DOWN;
-
-  camera.updateControls(dt, controls);
+void GLTFTestScene::handleWindowResize(const int width, const int height) {
+  Scene::handleWindowResize(width, height);
+  cameraController.onResize(width, height);
 }
 
 void GLTFTestScene::update(const double dt) {
@@ -50,8 +47,9 @@ void GLTFTestScene::render() const {
   program.use();
 
   program.setMatx4fv("model", rotationMatrix);
-  program.setMatx4fv("view", camera.getViewMatrix());
-  program.setMatx4fv("projection", camera.getProjectionMatrix());
+  program.setMatx4fv("view", cameraController.getCamera().getViewMatrix());
+  program.setMatx4fv("projection",
+                     cameraController.getCamera().getProjectionMatrix());
 
   model.draw(program);
 }

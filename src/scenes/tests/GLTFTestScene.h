@@ -3,6 +3,7 @@
 #include "../Scene.h"
 #include "graphics/rendering/objects/Model.h"
 #include "graphics/rendering/wrappers/Program.h"
+#include "scenes/components/CameraController.h"
 
 
 class GLTFTestScene : public Scene {
@@ -11,6 +12,8 @@ public:
                          const std::string& filename);
 
   void updateInput(double dt, const InputState& input) override;
+
+  void handleWindowResize(int width, int height) override;
 
   void update(double dt) override;
 
@@ -21,6 +24,7 @@ public:
 private:
   const Program program;
   Model model;
+  CameraController cameraController;
 
   float speed = 90.0f;
   float currentAngle = 0.0f;
