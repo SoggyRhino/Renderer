@@ -1,7 +1,7 @@
 #include <chrono>
 #include <thread>
 
-#include "scenes/tests/GLTFTestScene.h"
+#include "scenes/tests/SPlisHSPlasHTestScene.h"
 #include "graphics/rendering/wrappers/RenderState.h"
 #include "graphics/runtime/ImGuiLayer.h"
 #include "graphics/runtime/Window.h"
@@ -10,8 +10,7 @@ int main(int argc, const char* /*argv*/[]) {
   Window window{};
   ImGuiLayer const ui{window};
 
-  GLTFTestScene scene{window.getWidth(), window.getHeight(),
-                      "models/BarramundiFish/BarramundiFish.gltf"};
+  SPlisHSPlasHTestScene scene{window.getWidth(), window.getHeight()};
   window.setResizeCallback(
       [&scene](const int width, const int height) {
         scene.handleWindowResize(width, height);

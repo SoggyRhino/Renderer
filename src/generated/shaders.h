@@ -88,3 +88,29 @@ void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
 })__SHADER__";
 
+inline constexpr std::string_view SPH_SIMPLE_FRAG = R"__SHADER__(#version 460 core
+
+out vec4 FragColor;
+
+uniform vec3 uColor = vec3(1.0, 1.0, 1.0);
+
+void main() {
+    FragColor = vec4(uColor, 1.0);
+}
+)__SHADER__";
+
+inline constexpr std::string_view SPH_SIMPLE_VERT = R"__SHADER__(#version 460 core
+
+layout (location = 0) in vec3 aPos;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+uniform float uPointSize = 8.0;
+
+void main() {
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    gl_PointSize = uPointSize;
+}
+)__SHADER__";
+

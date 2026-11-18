@@ -48,6 +48,8 @@ add_executable(${PROJECT_NAME}
         src/scenes/tests/GLTFTestScene.h
         src/scenes/tests/AllModelsTestScene.cpp
         src/scenes/tests/AllModelsTestScene.h
+        src/scenes/tests/SPlisHSPlasHTestScene.cpp
+        src/scenes/tests/SPlisHSPlasHTestScene.h
         src/graphics/rendering/objects/Mesh.cpp
         src/graphics/rendering/objects/Mesh.h
         src/graphics/rendering/objects/Model.cpp
@@ -57,6 +59,13 @@ add_executable(${PROJECT_NAME}
 
         lib/tiny_gltf_v3.c
         src/scenes/Scene.cpp
+        src/physics/PhysicsEngine.cpp
+        src/physics/PhysicsEngine.h
+        src/physics/objects/PhysicsObject.h
+        src/physics/objects/Box.cpp
+        src/physics/objects/Box.h
+        src/physics/objects/FluidObject.cpp
+        src/physics/objects/FluidObject.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -75,6 +84,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         OpenGL::GL
         stb_image
         imgui
+        SPlisHSPlasH
 )
 
 copy_assets(
