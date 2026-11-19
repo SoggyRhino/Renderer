@@ -24,10 +24,9 @@ private:
   const Program program;
   CameraController cameraController;
 
-  PhysicsEngine engine;
-  Box boxOutline;
   Box cube;
   FluidObject water;
+  PhysicsEngine engine;
 
   glm::mat4 sceneTransform{1.0f};
   bool pausePhysics = true;

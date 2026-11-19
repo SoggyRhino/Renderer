@@ -23,13 +23,11 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
   : Scene(windowWidth, windowHeight),
     program(SPH_SIMPLE_VERT, SPH_SIMPLE_FRAG),
     cameraController(windowWidth, windowHeight),
-    boxOutline(Box::fromMinMax(
-        {-kBoxHalfExtent, 0.0f, -kBoxHalfExtent},
-        {kBoxHalfExtent, kBoxHeight, kBoxHalfExtent})),
     cube({0.0f, kCubeStartY, 0.0f}, glm::vec3(kCubeHalfExtent), true, kCubeDensity),
     water(
         {-kBoxHalfExtent + kFluidMargin, kFluidMargin, -kBoxHalfExtent + kFluidMargin},
-        {kBoxHalfExtent - kFluidMargin, kPoolHeight, kBoxHalfExtent - kFluidMargin}) {
+        {kBoxHalfExtent - kFluidMargin, kPoolHeight, kBoxHalfExtent - kFluidMargin}),
+    engine({}, {cube, water}) {
   RenderState::apply({
       .clearColor = {0.08f, 0.09f, 0.12f, 1.0f},
       .depthTest = true,
@@ -43,23 +41,11 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
   sceneTransform = glm::rotate(sceneTransform, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
   sceneTransform = glm::rotate(sceneTransform, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-  boxOutline.setCollisionEnabled(false);
-  boxOutline.setWireframe(true);
-  boxOutline.setColor({0.75f, 0.78f, 0.85f});
-
   cube.setColor({0.95f, 0.45f, 0.2f});
   cube.setVisible(showCube);
 
   water.setColor({0.2f, 0.65f, 1.0f});
   water.setPointSize(pointSize);
-
-  engine.setWorldBounds(
-      {-kBoxHalfExtent, 0.0f, -kBoxHalfExtent},
-      {kBoxHalfExtent, kBoxHeight, kBoxHalfExtent});
-
-  engine.registerObject(cube);
-  engine.registerObject(water);
-  engine.init();
 }
 
 void SPlisHSPlasHTestScene::updateInput(const double dt, const InputState& input) {
@@ -84,7 +70,6 @@ void SPlisHSPlasHTestScene::render() const {
   program.setMatx4fv("view", cameraController.getCamera().getViewMatrix());
   program.setMatx4fv("projection", cameraController.getCamera().getProjectionMatrix());
 
-  boxOutline.render(program, sceneTransform);
   water.render(program, sceneTransform);
   cube.render(program, sceneTransform);
 }
@@ -105,10 +90,5 @@ void SPlisHSPlasHTestScene::renderUI() {
   ImGui::SliderFloat("Time Scale", &timeScale, 0.1f, 2.0f, "%.2fx");
   ImGui::Text("Particles: %zu", water.getParticleCount());
   ImGui::Text("Sim Time: %.3f s", static_cast<double>(engine.getSimTime()));
-  ImGui::Text(
-      "Step: %.2f ms (%d substeps, %.2fx realtime)",
-      static_cast<double>(engine.getLastStepTimeMs()),
-      engine.getLastSubsteps(),
-      static_cast<double>(engine.getLastSimSpeedRatio()));
   ImGui::End();
 }

@@ -22,17 +22,11 @@ public:
       bool isDynamic = false,
       float density = 1000.0F);
 
-  [[nodiscard]] static Box fromMinMax(
-      const glm::vec3& minCorner,
-      const glm::vec3& maxCorner,
-      bool isDynamic = false,
-      float density = 1000.0F);
-
   void render(
       const Program& program,
       const glm::mat4& parentTransform = glm::mat4(1.0f)) const override;
 
-  [[nodiscard]] bool isDynamic() const { return dynamic; }
+  [[nodiscard]] bool isDynamic() const override { return dynamic; }
   [[nodiscard]] bool isCollisionEnabled() const { return collisionEnabled; }
 
   void setWireframe(const bool enabled) { wireframe = enabled; }
@@ -46,6 +40,10 @@ protected:
   void initPhysics(SPH::Simulation& sim, float particleRadius,
                    float boundarySpacingFactor) override;
   void resetPhysics() override;
+  void integrate(float stepDt, const glm::vec3& gravity) override;
+  void resolveStaticCollision(const PhysicsObject& staticObject,
+                              float particleRadius) override;
+  void syncBoundaryParticles() override;
 
 private:
   friend class PhysicsEngine;
@@ -55,11 +53,8 @@ private:
       float spacing) const;
   void computeMassAndInertia();
   void clearBoundaryForceAndTorque() const;
-  void integrate(float stepDt, const glm::vec3& gravity);
-  void resolveStaticCollision(const Box& staticBox, float particleRadius);
   void clampToBounds(const glm::vec3& minCorner, const glm::vec3& maxCorner,
                      float particleRadius);
-  void syncBoundaryParticles() const;
 
   glm::vec3 initialPosition{0.0F};
   glm::vec3 position{0.0F};

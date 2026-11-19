@@ -59,9 +59,12 @@ add_executable(${PROJECT_NAME}
 
         lib/tiny_gltf_v3.c
         src/scenes/Scene.cpp
+        src/physics/BoundarySampling.h
         src/physics/PhysicsEngine.cpp
         src/physics/PhysicsEngine.h
+        src/physics/SphMath.h
         src/physics/objects/PhysicsObject.h
+        src/physics/objects/DynamicRigidBody.h
         src/physics/objects/Box.cpp
         src/physics/objects/Box.h
         src/physics/objects/FluidObject.cpp

@@ -2,55 +2,23 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
+#include <ranges>
 #include <vector>
 
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/component_wise.hpp>
 
 #include "SPlisHSPlasH/BoundaryModel_Akinci2012.h"
+#include "SPlisHSPlasH/RigidBodyObject.h"
 #include "SPlisHSPlasH/Simulation.h"
 #include "SPlisHSPlasH/StaticRigidBody.h"
 
 #include "graphics/rendering/wrappers/Program.h"
-
-namespace {
-Vector3r toSph(const glm::vec3& v) { return {v.x, v.y, v.z}; }
-
-glm::vec3 toGlm(const Vector3r& v) {
-  return {float(v.x()), float(v.y()), float(v.z())};
-}
-
-Quaternionr toSph(const glm::quat& q) { return {q.w, q.x, q.y, q.z}; }
-
-class DynamicRigidBody final : public SPH::StaticRigidBody {
-public:
-  bool isDynamic() const override { return true; }
-};
-
-void appendGridFace(
-    std::vector<glm::vec3>& out,
-    const glm::vec3& origin,
-    const glm::vec3& uDir,
-    const glm::vec3& vDir,
-    const float uLen,
-    const float vLen,
-    const float spacing) {
-  const int nu = std::max(1, static_cast<int>(uLen / spacing) + 1);
-  const int nv = std::max(1, static_cast<int>(vLen / spacing) + 1);
-  for (int iu = 0; iu < nu; ++iu) {
-    const float u = (nu == 1)
-                      ? 0.0f
-                      : uLen * (static_cast<float>(iu) / static_cast<float>(
-                                  nu - 1));
-    for (int iv = 0; iv < nv; ++iv) {
-      const float v = (nv == 1)
-                        ? 0.0f
-                        : vLen * (static_cast<float>(iv) / static_cast<float>(
-                                    nv - 1));
-      out.push_back(origin + uDir * u + vDir * v);
-    }
-  }
-}
-} // namespace
+#include "physics/BoundarySampling.h"
+#include "physics/SphMath.h"
+#include "physics/objects/DynamicRigidBody.h"
 
 Box::Box(
     const glm::vec3& initialPos,
@@ -63,16 +31,6 @@ Box::Box(
     dynamic(isDyn),
     density(bodyDensity) {
   rebuildMesh();
-}
-
-Box Box::fromMinMax(
-    const glm::vec3& minCorner,
-    const glm::vec3& maxCorner,
-    const bool isDynamic,
-    const float density) {
-  const glm::vec3 mn = glm::min(minCorner, maxCorner);
-  const glm::vec3 mx = glm::max(minCorner, maxCorner);
-  return Box(0.5f * (mn + mx), 0.5f * (mx - mn), isDynamic, density);
 }
 
 void Box::rebuildMesh() {
@@ -179,12 +137,14 @@ std::vector<glm::vec3> Box::buildBoundaryParticles(const float spacing) const {
 }
 
 void Box::computeMassAndInertia() {
-  const glm::vec3 size = 2.0f * halfExtents;
-  mass = std::max(density * size.x * size.y * size.z, 1e-6f);
-  const float avgSizeSq = (size.x * size.x + size.y * size.y + size.z * size.z)
-                          / 3.0f;
-  const float inertia = (mass * avgSizeSq) / 6.0f;
-  invInertia = inertia > 1e-8f ? 1.0f / inertia : 0.0f;
+  constexpr float kMinMass = 1e-6F;
+  constexpr float kMinInertia = 1e-8F;
+
+  const glm::vec3 size = 2.0F * halfExtents;
+  mass = std::max(density * glm::compMul(size), kMinMass);
+
+  const float inertia = (mass * glm::dot(size, size)) / 18.0F;
+  invInertia = (inertia > kMinInertia) ? (1.0F / inertia) : 0.0F;
 }
 
 void Box::initPhysics(
@@ -197,25 +157,29 @@ void Box::initPhysics(
     return;
   }
 
-  const std::vector<glm::vec3> localPts = buildBoundaryParticles(
-      boundarySpacingFactor * particleRadius);
-  std::vector<Vector3r> sphPts;
-  sphPts.reserve(localPts.size());
-  for (const glm::vec3& p : localPts) {
-    sphPts.push_back(toSph(dynamic ? p : (position + rotation * p)));
+  const auto toBoundaryPoint = [this](const glm::vec3& localPoint) {
+    return toSph(dynamic ? localPoint : (position + rotation * localPoint));
+  };
+
+  auto boundaryPoints =
+      buildBoundaryParticles(boundarySpacingFactor * particleRadius) |
+      std::views::transform(toBoundaryPoint) |
+      std::ranges::to<std::vector>();
+
+  std::unique_ptr<SPH::RigidBodyObject> rigidBody;
+  if (dynamic) {
+    rigidBody = std::make_unique<DynamicRigidBody>();
+  } else {
+    rigidBody = std::make_unique<SPH::StaticRigidBody>();
   }
 
-  SPH::RigidBodyObject* body = dynamic
-                                 ? static_cast<SPH::RigidBodyObject*>(new
-                                   DynamicRigidBody())
-                                 : static_cast<SPH::RigidBodyObject*>(new
-                                   SPH::StaticRigidBody());
+  auto model = std::make_unique<SPH::BoundaryModel_Akinci2012>();
+  model->initModel(rigidBody.release(),
+                   static_cast<unsigned int>(boundaryPoints.size()),
+                   boundaryPoints.data());
 
-  auto* model = new SPH::BoundaryModel_Akinci2012();
-  model->initModel(body, static_cast<unsigned int>(sphPts.size()),
-                   sphPts.data());
-  sim.addBoundaryModel(model);
-  boundaryModel = model;
+  sim.addBoundaryModel(model.get());
+  boundaryModel = model.release();
 
   if (dynamic) {
     syncBoundaryParticles();
@@ -224,9 +188,9 @@ void Box::initPhysics(
 
 void Box::resetPhysics() {
   position = initialPosition;
-  rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-  velocity = glm::vec3(0.0f);
-  angularVelocity = glm::vec3(0.0f);
+  rotation = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
+  velocity = glm::vec3{};
+  angularVelocity = glm::vec3{};
 
   if (boundaryModel != nullptr) {
     boundaryModel->clearForceAndTorque();
@@ -243,14 +207,15 @@ void Box::clearBoundaryForceAndTorque() const {
 }
 
 void Box::integrate(const float stepDt, const glm::vec3& gravity) {
-  if (!dynamic || stepDt <= 0.0f) {
+  if (!dynamic || stepDt <= 0.0F) {
     return;
   }
 
-  glm::vec3 fluidForce(0.0f);
-  glm::vec3 fluidTorque(0.0f);
+  glm::vec3 fluidForce{};
+  glm::vec3 fluidTorque{};
   if (boundaryModel != nullptr) {
-    Vector3r sphForce, sphTorque;
+    Vector3r sphForce;
+    Vector3r sphTorque;
     boundaryModel->getForceAndTorque(sphForce, sphTorque);
     boundaryModel->clearForceAndTorque();
     fluidForce = toGlm(sphForce);
@@ -267,14 +232,15 @@ void Box::integrate(const float stepDt, const glm::vec3& gravity) {
   rotation = glm::normalize(rotation + 0.5f * stepDt * (angVelQ * rotation));
 }
 
-void Box::resolveStaticCollision(const Box& staticBox,
+void Box::resolveStaticCollision(const PhysicsObject& staticObject,
                                  const float particleRadius) {
-  if (!dynamic || !staticBox.isCollisionEnabled()) {
+  const auto* staticBox = dynamic_cast<const Box*>(&staticObject);
+  if (staticBox == nullptr || !dynamic || !staticBox->isCollisionEnabled()) {
     return;
   }
 
-  const glm::vec3 delta = position - staticBox.position;
-  const glm::vec3 overlap = (staticBox.halfExtents + halfExtents +
+  const glm::vec3 delta = position - staticBox->position;
+  const glm::vec3 overlap = (staticBox->halfExtents + halfExtents +
                              glm::vec3(particleRadius)) - glm::abs(delta);
   if (overlap.x <= 0.0f || overlap.y <= 0.0f || overlap.z <= 0.0f) {
     return;
@@ -325,7 +291,7 @@ void Box::clampToBounds(
   }
 }
 
-void Box::syncBoundaryParticles() const {
+void Box::syncBoundaryParticles() {
   if (boundaryModel == nullptr || !dynamic) {
     return;
   }
