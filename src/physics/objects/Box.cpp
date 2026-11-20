@@ -1,7 +1,9 @@
 #include "physics/objects/Box.h"
 
 #include <algorithm>
-#include <cmath>
+#include <array>
+#include <cassert>
+#include <cstdint>
 #include <memory>
 #include <ranges>
 #include <vector>
@@ -20,6 +22,21 @@
 #include "physics/SphMath.h"
 #include "physics/objects/DynamicRigidBody.h"
 
+namespace {
+constexpr std::array kUnitVertices = {
+    glm::vec3{-1.0F, -1.0F, -1.0F}, glm::vec3{1.0F, -1.0F, -1.0F},
+    glm::vec3{1.0F, -1.0F, 1.0F}, glm::vec3{-1.0F, -1.0F, 1.0F},
+    glm::vec3{-1.0F, 1.0F, -1.0F}, glm::vec3{1.0F, 1.0F, -1.0F},
+    glm::vec3{1.0F, 1.0F, 1.0F}, glm::vec3{-1.0F, 1.0F, 1.0F},
+};
+
+constexpr std::array<uint32_t, 36> kBoxIndices = {
+    0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7,
+    0, 1, 5, 0, 5, 4, 3, 7, 6, 3, 6, 2,
+    0, 4, 7, 0, 7, 3, 1, 2, 6, 1, 6, 5,
+};
+} // namespace
+
 Box::Box(
     const glm::vec3& initialPos,
     const glm::vec3& halfExtentsIn,
@@ -34,54 +51,16 @@ Box::Box(
 }
 
 void Box::rebuildMesh() {
-  const float hx = halfExtents.x;
-  const float hy = halfExtents.y;
-  const float hz = halfExtents.z;
+  std::array<glm::vec3, kUnitVertices.size()> vertices{};
+  std::ranges::transform(
+      kUnitVertices, vertices.begin(),
+      [this](const glm::vec3& corner) { return corner * halfExtents; });
 
-  const std::vector<glm::vec3> vertices = {
-      {-hx, -hy, -hz}, {hx, -hy, -hz}, {hx, -hy, hz}, {-hx, -hy, hz},
-      {-hx, hy, -hz}, {hx, hy, -hz}, {hx, hy, hz}, {-hx, hy, hz},
-  };
-  const std::vector<uint32_t> triIndices = {
-      0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7,
-      0, 1, 5, 0, 5, 4, 3, 7, 6, 3, 6, 2,
-      0, 4, 7, 0, 7, 3, 1, 2, 6, 1, 6, 5,
-  };
-  const std::vector<uint32_t> lineIndices = {
-      0, 1, 1, 2, 2, 3, 3, 0,
-      4, 5, 5, 6, 6, 7, 7, 4,
-      0, 4, 1, 5, 2, 6, 3, 7,
-  };
+  vbo = Buffer(vertices);
+  ebo = Buffer(kBoxIndices);
 
-  vbo.setData(
-      GL_ARRAY_BUFFER,
-      static_cast<GLsizeiptr>(vertices.size() * sizeof(glm::vec3)),
-      vertices.data(),
-      GL_STATIC_DRAW);
-
-  solidVAO.bind();
-  vbo.bind(GL_ARRAY_BUFFER);
-  solidEBO.setData(
-      GL_ELEMENT_ARRAY_BUFFER,
-      static_cast<GLsizeiptr>(triIndices.size() * sizeof(uint32_t)),
-      triIndices.data(),
-      GL_STATIC_DRAW);
-  solidVAO.setAttributePointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3),
-                               nullptr);
-  solidVAO.unbind();
-  solidIndexCount = static_cast<GLsizei>(triIndices.size());
-
-  wireVAO.bind();
-  vbo.bind(GL_ARRAY_BUFFER);
-  wireEBO.setData(
-      GL_ELEMENT_ARRAY_BUFFER,
-      static_cast<GLsizeiptr>(lineIndices.size() * sizeof(uint32_t)),
-      lineIndices.data(),
-      GL_STATIC_DRAW);
-  wireVAO.setAttributePointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3),
-                              nullptr);
-  wireVAO.unbind();
-  wireIndexCount = static_cast<GLsizei>(lineIndices.size());
+  vao.configure(vbo, sizeof(glm::vec3),
+                {{.index = 0, .size = 3, .type = GL_FLOAT}}, &ebo);
 }
 
 void Box::render(const Program& program,
@@ -96,11 +75,7 @@ void Box::render(const Program& program,
   program.setMatx4fv("model", model);
   program.set3fv("uColor", color);
 
-  if (wireframe) {
-    wireVAO.drawElements(GL_LINES, wireIndexCount, GL_UNSIGNED_INT);
-  } else {
-    solidVAO.drawElements(GL_TRIANGLES, solidIndexCount, GL_UNSIGNED_INT);
-  }
+  vao.drawElements(GL_TRIANGLES, kBoxIndices.size(),GL_UNSIGNED_INT);
 }
 
 std::vector<glm::vec3> Box::buildBoundaryParticles(const float spacing) const {
@@ -152,10 +127,6 @@ void Box::initPhysics(
     const float particleRadius,
     const float boundarySpacingFactor) {
   computeMassAndInertia();
-  boundaryModel = nullptr;
-  if (!collisionEnabled) {
-    return;
-  }
 
   const auto toBoundaryPoint = [this](const glm::vec3& localPoint) {
     return toSph(dynamic ? localPoint : (position + rotation * localPoint));
@@ -187,22 +158,16 @@ void Box::initPhysics(
 }
 
 void Box::resetPhysics() {
+  assert(boundaryModel != nullptr);
+
   position = initialPosition;
   rotation = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
   velocity = glm::vec3{};
   angularVelocity = glm::vec3{};
 
-  if (boundaryModel != nullptr) {
-    boundaryModel->clearForceAndTorque();
-    if (dynamic) {
-      syncBoundaryParticles();
-    }
-  }
-}
-
-void Box::clearBoundaryForceAndTorque() const {
-  if (boundaryModel != nullptr) {
-    boundaryModel->clearForceAndTorque();
+  boundaryModel->clearForceAndTorque();
+  if (dynamic) {
+    syncBoundaryParticles();
   }
 }
 
@@ -210,17 +175,15 @@ void Box::integrate(const float stepDt, const glm::vec3& gravity) {
   if (!dynamic || stepDt <= 0.0F) {
     return;
   }
+  assert(boundaryModel != nullptr);
 
-  glm::vec3 fluidForce{};
-  glm::vec3 fluidTorque{};
-  if (boundaryModel != nullptr) {
-    Vector3r sphForce;
-    Vector3r sphTorque;
-    boundaryModel->getForceAndTorque(sphForce, sphTorque);
-    boundaryModel->clearForceAndTorque();
-    fluidForce = toGlm(sphForce);
-    fluidTorque = toGlm(sphTorque);
-  }
+  Vector3r sphForce;
+  Vector3r sphTorque;
+  boundaryModel->getForceAndTorque(sphForce, sphTorque);
+  boundaryModel->clearForceAndTorque();
+
+  const glm::vec3 fluidForce = toGlm(sphForce);
+  const glm::vec3 fluidTorque = toGlm(sphTorque);
 
   velocity += (gravity + fluidForce / std::max(mass, 1e-6f)) * stepDt;
   angularVelocity = (angularVelocity + fluidTorque * invInertia * stepDt) *
@@ -235,7 +198,7 @@ void Box::integrate(const float stepDt, const glm::vec3& gravity) {
 void Box::resolveStaticCollision(const PhysicsObject& staticObject,
                                  const float particleRadius) {
   const auto* staticBox = dynamic_cast<const Box*>(&staticObject);
-  if (staticBox == nullptr || !dynamic || !staticBox->isCollisionEnabled()) {
+  if (staticBox == nullptr || !dynamic) {
     return;
   }
 
@@ -292,9 +255,10 @@ void Box::clampToBounds(
 }
 
 void Box::syncBoundaryParticles() {
-  if (boundaryModel == nullptr || !dynamic) {
+  if (!dynamic) {
     return;
   }
+  assert(boundaryModel != nullptr);
 
   const Vector3r pos = toSph(position);
   const Quaternionr rotQ = toSph(rotation);
@@ -302,10 +266,10 @@ void Box::syncBoundaryParticles() {
   const Vector3r vel = toSph(velocity);
   const Vector3r angVel = toSph(angularVelocity);
 
-  if (SPH::RigidBodyObject* rbo = boundaryModel->getRigidBodyObject()) {
-    rbo->setPosition(pos);
-    rbo->setRotation(rotQ);
-  }
+  SPH::RigidBodyObject* rbo = boundaryModel->getRigidBodyObject();
+  assert(rbo != nullptr);
+  rbo->setPosition(pos);
+  rbo->setRotation(rotQ);
 
   const unsigned int count = boundaryModel->numberOfParticles();
   for (unsigned int j = 0; j < count; ++j) {

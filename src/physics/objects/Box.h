@@ -24,13 +24,9 @@ public:
 
   void render(
       const Program& program,
-      const glm::mat4& parentTransform = glm::mat4(1.0f)) const override;
+      const glm::mat4& parentTransform = glm::mat4(1.0F)) const override;
 
   [[nodiscard]] bool isDynamic() const override { return dynamic; }
-  [[nodiscard]] bool isCollisionEnabled() const { return collisionEnabled; }
-
-  void setWireframe(const bool enabled) { wireframe = enabled; }
-  void setCollisionEnabled(const bool enabled) { collisionEnabled = enabled; }
 
   [[nodiscard]] const glm::vec3& getPosition() const { return position; }
   [[nodiscard]] const glm::quat& getRotation() const { return rotation; }
@@ -52,7 +48,6 @@ private:
   [[nodiscard]] std::vector<glm::vec3> buildBoundaryParticles(
       float spacing) const;
   void computeMassAndInertia();
-  void clearBoundaryForceAndTorque() const;
   void clampToBounds(const glm::vec3& minCorner, const glm::vec3& maxCorner,
                      float particleRadius);
 
@@ -68,16 +63,9 @@ private:
   float mass = 1.0F;
   float invInertia = 0.0F;
 
-  bool collisionEnabled = true;
-  bool wireframe = false;
-
   SPH::BoundaryModel_Akinci2012* boundaryModel = nullptr;
 
-  VertexArray solidVAO;
-  VertexArray wireVAO;
+  VertexArray vao;
   Buffer vbo;
-  Buffer solidEBO;
-  Buffer wireEBO;
-  GLsizei solidIndexCount = 0;
-  GLsizei wireIndexCount = 0;
+  Buffer ebo;
 };
