@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include <glm/glm.hpp>
 
 #include "../Scene.h"
@@ -24,6 +26,7 @@ private:
   const Program program;
   CameraController cameraController;
 
+  std::array<Box, 5> containerBoxes;
   Box cube;
   FluidObject water;
   PhysicsEngine engine;
@@ -31,6 +34,7 @@ private:
   glm::mat4 sceneTransform{1.0f};
   bool pausePhysics = true;
   bool showCube = false;
+  bool showContainer = false;
   float pointSize = 8.0f;
   float timeScale = 1.0f;
 };
