@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "../Scene.h"
+#include "graphics/rendering/LightingManager.h"
 #include "graphics/rendering/materials/ParticleMaterial.h"
 #include "graphics/rendering/materials/SimpleMaterial.h"
 #include "graphics/rendering/meshes/BoxMesh.h"
@@ -38,6 +39,7 @@ private:
 
   const Program program;
   CameraController cameraController;
+  LightingManager lightingManager;
 
   BoxMesh boxMesh;
   ParticleMesh particleMesh;

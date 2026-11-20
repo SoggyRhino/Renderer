@@ -24,6 +24,8 @@ GLTFTestScene::GLTFTestScene(
       .blend = true,
       .cullFace = true,
   });
+
+  lightingManager.addLight({3.0f, 4.0f, 5.0f}, {1.0f, 1.0f, 1.0f}, 3.0f);
 }
 
 void GLTFTestScene::updateInput(const double dt, const InputState& input) {
@@ -63,7 +65,8 @@ void GLTFTestScene::render() const {
 
   for (const auto& [material, instances] : asset.batches) {
     for (const auto& instance : instances) {
-      material->bind(rotationMatrix * instance.transform, view, projection);
+      material->bind(rotationMatrix * instance.transform, view, projection,
+                     lightingManager.getLights());
       instance.mesh->draw();
     }
   }

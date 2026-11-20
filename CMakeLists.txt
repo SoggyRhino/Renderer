@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
         src/graphics/rendering/wrappers/Program.h
         src/graphics/rendering/Camera.cpp
         src/graphics/rendering/Camera.h
+        src/graphics/rendering/LightingManager.h
         src/scenes/components/CameraController.cpp
         src/scenes/components/CameraController.h
         src/scenes/Scene.h

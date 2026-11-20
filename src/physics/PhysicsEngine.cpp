@@ -1,7 +1,6 @@
 #include "physics/PhysicsEngine.h"
 
 #include <algorithm>
-#include <cmath>
 #include <stdexcept>
 #include <utility>
 

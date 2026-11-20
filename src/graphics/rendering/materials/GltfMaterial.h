@@ -1,10 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include "graphics/rendering/LightingManager.h"
 #include "graphics/rendering/wrappers/Program.h"
 #include "graphics/rendering/wrappers/Texture.h"
 
@@ -15,11 +17,13 @@ struct GltfMaterial {
   void bind(
       const glm::mat4& model,
       const glm::mat4& view,
-      const glm::mat4& projection) const {
+      const glm::mat4& projection,
+      const std::vector<Light>& lights = {}) const {
     program.use();
     program.setMatx4fv("model", model);
     program.setMatx4fv("view", view);
     program.setMatx4fv("projection", projection);
+    LightingManager::apply(program, lights);
 
     const bool hasTex = baseColorTexture != nullptr && baseColorTexture->
                         isValid();

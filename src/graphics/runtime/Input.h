@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
 
 enum class Key : uint8_t {

@@ -101,6 +101,7 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
 
   physics.cube.setActive(showCube);
   particleMesh.upload(physics.water.particles());
+  lightingManager.addLight({2.0F, 3.0F, 2.0F}, {1.0F, 1.0F, 1.0F}, 3.0F);
 }
 
 void SPlisHSPlasHTestScene::updateInput(const double dt,
@@ -136,21 +137,22 @@ void SPlisHSPlasHTestScene::render() const {
   const glm::mat4& view = cameraController.getCamera().getViewMatrix();
   const glm::mat4& projection = cameraController.getCamera().
                                                  getProjectionMatrix();
+  const auto& lights = lightingManager.getLights();
 
   if (showContainer) {
     for (const BoxView& box : physics.containerBoxes) {
       containerMaterial.bind(sceneTransform * box.modelMatrix(), view,
-                             projection);
+                             projection, lights);
       boxMesh.draw();
     }
   }
 
-  waterMaterial.bind(sceneTransform, view, projection);
+  waterMaterial.bind(sceneTransform, view, projection, lights);
   particleMesh.draw();
 
   if (showCube) {
     cubeMaterial.bind(sceneTransform * physics.cube.modelMatrix(), view,
-                      projection);
+                      projection, lights);
     boxMesh.draw();
   }
 }

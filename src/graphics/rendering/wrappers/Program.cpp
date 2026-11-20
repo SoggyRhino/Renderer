@@ -87,6 +87,16 @@ void Program::use() const {
   glUseProgram(this->id);
 }
 
+bool Program::hasUniform(const std::string& name) const {
+  if (const auto it = this->uniforms.find(name); it != this->uniforms.end()) {
+    return it->second != -1;
+  }
+
+  const GLint location = glGetUniformLocation(this->id, name.c_str());
+  this->uniforms.emplace(name, location);
+  return location != -1;
+}
+
 void Program::setBool(const std::string& name, const bool value) const {
   setInt(name, value ? 1 : 0);
 }

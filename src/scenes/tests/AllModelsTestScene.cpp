@@ -24,8 +24,9 @@ void AllModelsTestScene::initModelNames() {
 AllModelsTestScene::AllModelsTestScene(
     const int windowWidth,
     const int windowHeight,
-    size_t initialIndex)
+    const size_t initialIndex)
   : Scene(windowWidth, windowHeight), program(MODEL_VERT, MODEL_FRAG) {
+  lightingManager.addLight({3.0f, 4.0f, 5.0f}, {1.0f, 1.0f, 1.0f}, 3.0f);
   initModelNames();
   if constexpr (!Models::all.empty()) {
     const size_t index = (initialIndex < Models::all.size()) ? initialIndex : 0;
@@ -87,7 +88,7 @@ void AllModelsTestScene::render() const {
     for (const auto& [material, instances] : asset->batches) {
       for (const auto& instance : instances) {
         material->bind(rotationMatrix * instance.transform, viewMatrix,
-                       projectionMatrix);
+                       projectionMatrix, lightingManager.getLights());
         instance.mesh->draw();
       }
     }

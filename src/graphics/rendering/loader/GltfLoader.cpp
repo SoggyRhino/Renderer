@@ -1,8 +1,6 @@
 #include "graphics/rendering/loader/GltfLoader.h"
 
 #include <array>
-#include <cstdint>
-#include <cstring>
 #include <filesystem>
 #include <format>
 #include <limits>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Scene.h"
+#include "graphics/rendering/LightingManager.h"
 #include "graphics/rendering/loader/GltfAsset.h"
 #include "graphics/rendering/wrappers/Program.h"
 #include "scenes/components/CameraController.h"
@@ -31,6 +32,7 @@ private:
   const Program program;
   GltfAsset asset;
   CameraController cameraController;
+  LightingManager lightingManager;
 
   float speed = 90.0f;
   float currentAngle = 0.0f;

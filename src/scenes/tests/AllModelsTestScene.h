@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Scene.h"
+#include "graphics/rendering/LightingManager.h"
 #include "graphics/rendering/loader/GltfAsset.h"
 #include "graphics/rendering/wrappers/Program.h"
 #include <glm/glm.hpp>
@@ -36,6 +37,7 @@ public:
 private:
   const Program program;
   std::optional<GltfAsset> asset;
+  LightingManager lightingManager;
 
   int currentModelIndex = 0;
   std::vector<std::string> modelNames;
