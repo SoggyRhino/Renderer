@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <memory>
 #include <ranges>
 #include <vector>
@@ -10,6 +11,7 @@
 #include <glm/gtx/component_wise.hpp>
 
 #include "SPlisHSPlasH/BoundaryModel_Akinci2012.h"
+#include "SPlisHSPlasH/NeighborhoodSearch.h"
 #include "SPlisHSPlasH/RigidBodyObject.h"
 #include "SPlisHSPlasH/Simulation.h"
 #include "SPlisHSPlasH/StaticRigidBody.h"
@@ -124,6 +126,26 @@ void Box::computeMassAndInertia() {
   invInertia = (inertia > kMinInertia) ? (1.0F / inertia) : 0.0F;
 }
 
+void Box::setActive(const bool isActive) {
+  if (active == isActive) {
+    return;
+  }
+  active = isActive;
+  resetPhysics();
+}
+
+void Box::syncActiveState() {
+  if (!SPH::Simulation::hasCurrent()) {
+    return;
+  }
+  SPH::Simulation* sim = SPH::Simulation::getCurrent();
+  if (!sim->isSimulationInitialized() || sim->getNeighborhoodSearch() == nullptr) {
+    return;
+  }
+  sim->getNeighborhoodSearch()->setNeighborhoodSearchActive(
+      boundaryModel.getPointSetIndex(), false, active);
+}
+
 void Box::resetPhysics() {
   position = initialPosition;
   rotation = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
@@ -132,12 +154,16 @@ void Box::resetPhysics() {
 
   boundaryModel.clearForceAndTorque();
   if (dynamic) {
+    const bool wasActive = active;
+    active = true;
     syncBoundaryParticles();
+    active = wasActive;
   }
+  syncActiveState();
 }
 
 void Box::integrate(const float stepDt, const glm::vec3& gravity) {
-  if (!dynamic || stepDt <= 0.0F) {
+  if (!dynamic || !active || stepDt <= 0.0F) {
     return;
   }
 
@@ -146,23 +172,54 @@ void Box::integrate(const float stepDt, const glm::vec3& gravity) {
   boundaryModel.getForceAndTorque(sphForce, sphTorque);
   boundaryModel.clearForceAndTorque();
 
-  const glm::vec3 fluidForce = toGlm(sphForce);
-  const glm::vec3 fluidTorque = toGlm(sphTorque);
+  const auto isFiniteVec3 = [](const glm::vec3& v) {
+    return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z);
+  };
+
+  glm::vec3 fluidForce = toGlm(sphForce);
+  glm::vec3 fluidTorque = toGlm(sphTorque);
+  if (!isFiniteVec3(fluidForce)) {
+    fluidForce = glm::vec3(0.0F);
+  }
+  if (!isFiniteVec3(fluidTorque)) {
+    fluidTorque = glm::vec3(0.0F);
+  }
 
   velocity += (gravity + fluidForce / std::max(mass, 1e-6F)) * stepDt;
   angularVelocity = (angularVelocity + fluidTorque * invInertia * stepDt) *
                     0.995F;
+
+  constexpr float kMaxLinearSpeed = 20.0F;
+  constexpr float kMaxAngularSpeed = 20.0F;
+  if (!isFiniteVec3(velocity)) {
+    velocity = glm::vec3(0.0F);
+  } else if (const float speedSq = glm::dot(velocity, velocity);
+             speedSq > kMaxLinearSpeed * kMaxLinearSpeed) {
+    velocity *= kMaxLinearSpeed / std::sqrt(speedSq);
+  }
+
+  if (!isFiniteVec3(angularVelocity)) {
+    angularVelocity = glm::vec3(0.0F);
+  } else if (const float angSq = glm::dot(angularVelocity, angularVelocity);
+             angSq > kMaxAngularSpeed * kMaxAngularSpeed) {
+    angularVelocity *= kMaxAngularSpeed / std::sqrt(angSq);
+  }
+
   position += velocity * stepDt;
 
   const glm::quat angVelQ(0.0F, angularVelocity.x, angularVelocity.y,
                           angularVelocity.z);
-  rotation = glm::normalize(rotation + 0.5F * stepDt * (angVelQ * rotation));
+  const glm::quat nextRot = rotation + 0.5F * stepDt * (angVelQ * rotation);
+  if (const float lenSq = glm::dot(nextRot, nextRot);
+      std::isfinite(lenSq) && lenSq > 1e-12F) {
+    rotation = nextRot / std::sqrt(lenSq);
+  }
 }
 
 void Box::resolveStaticCollision(const PhysicsObject& staticObject,
                                  const float particleRadius) {
   const auto* staticBox = dynamic_cast<const Box*>(&staticObject);
-  if (staticBox == nullptr || !dynamic) {
+  if (staticBox == nullptr || !dynamic || !active || !staticBox->active) {
     return;
   }
 
@@ -190,7 +247,7 @@ void Box::resolveStaticCollision(const PhysicsObject& staticObject,
 }
 
 void Box::syncBoundaryParticles() {
-  if (!dynamic) {
+  if (!dynamic || !active) {
     return;
   }
 

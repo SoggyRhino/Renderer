@@ -1,5 +1,4 @@
 #include <chrono>
-#include <thread>
 
 #include "scenes/tests/SPlisHSPlasHTestScene.h"
 #include "graphics/rendering/wrappers/RenderState.h"
@@ -19,7 +18,17 @@ int main(int argc, const char* /*argv*/[]) {
       [&scene](const Key key, const KeyAction action) {
         scene.onKeyEvent(key, action);
       });
-  window.setShowCursor(scene.shouldShowCursor());
+  window.setMouseCallback(
+      [&scene](const float x, const float y) {
+        scene.handleMouseMovement(x, y);
+      });
+  window.setMouseLookResetCallback(
+      [&scene] {
+        scene.resetMouseMovement();
+      });
+
+  bool showCursor = scene.shouldShowCursor();
+  window.setShowCursor(showCursor);
 
   auto lastFrame = std::chrono::steady_clock::now();
   while (!window.shouldClose()) {
@@ -30,18 +39,20 @@ int main(int argc, const char* /*argv*/[]) {
         currentFrame - lastFrame).count();
     lastFrame = currentFrame;
 
-    if (const double sleep = (1.0F / 120.0F) - deltaTime; sleep > 0) {
-      std::this_thread::sleep_for(
-          std::chrono::milliseconds(static_cast<int>(sleep * 1000)));
-    }
-
     RenderState::clear();
 
     scene.updateInput(deltaTime, window.input());
     scene.update(deltaTime);
+
+    if (const bool nextShowCursor = scene.shouldShowCursor();
+        nextShowCursor != showCursor) {
+      showCursor = nextShowCursor;
+      window.setShowCursor(showCursor);
+    }
+
     scene.render();
 
-    if (scene.shouldShowCursor()) {
+    if (scene.shouldRenderUI()) {
       ui.begin();
       scene.renderUI();
       ui.end();

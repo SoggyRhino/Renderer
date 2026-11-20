@@ -3,7 +3,7 @@
 #include <utility>
 
 ParticleMesh::ParticleMesh() {
-  vbo.setData(0, nullptr, GL_DYNAMIC_DRAW);
+  vbo.setData(0, nullptr, GL_STREAM_DRAW);
   vao.configure(vbo, sizeof(glm::vec3),
                 {{.index = 0, .size = 3, .type = GL_FLOAT}});
 }
@@ -33,12 +33,11 @@ void ParticleMesh::upload(const std::span<const glm::vec3> positions) {
 
   const std::size_t byteSize = positions.size_bytes();
   if (byteSize <= capacityBytes) {
-    glNamedBufferSubData(vbo.id(), 0, static_cast<GLsizeiptr>(byteSize),
-                         positions.data());
+    vbo.setSubData(0, static_cast<GLsizeiptr>(byteSize), positions.data());
   } else {
     capacityBytes = byteSize;
     vbo.setData(static_cast<GLsizeiptr>(byteSize), positions.data(),
-                GL_DYNAMIC_DRAW);
+                GL_STREAM_DRAW);
   }
 }
 

@@ -13,6 +13,14 @@ public:
 
   [[nodiscard]] virtual bool isDynamic() const { return false; }
 
+  virtual void setActive(bool /*isActive*/) {
+  }
+
+  [[nodiscard]] virtual bool isActive() const { return true; }
+
+  virtual void syncActiveState() {
+  }
+
   virtual void resetPhysics() = 0;
 
   virtual void integrate(float /*stepDt*/, const glm::vec3& /*gravity*/) {

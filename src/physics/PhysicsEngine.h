@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -12,11 +13,11 @@ class PhysicsObject;
 
 struct PhysicsConfig {
   float particleRadius = 0.035F;
-  float boundarySpacingFactor = 1.8F;
-  float fixedTimeStep = 0.006F;
+  float boundarySpacingFactor = 1.6F;
+  float fixedTimeStep = 0.004F;
   glm::vec3 gravity{0.0F, -9.81F, 0.0F};
   float maxParticleSpeed = 12.0F;
-  int preSettleSteps = 25;
+  std::optional<PhysicsBounds> worldBounds{};
 };
 
 class PhysicsEngine {
@@ -47,6 +48,9 @@ public:
     Builder& operator=(const Builder&) = delete;
     Builder(Builder&&) = delete;
     Builder& operator=(Builder&&) = delete;
+
+    Builder& setWorldBounds(const glm::vec3& minCorner,
+                            const glm::vec3& maxCorner);
 
     BoxView addBox(
         const glm::vec3& position,

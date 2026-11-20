@@ -119,11 +119,30 @@ if(_has_saved_ep_disconnected)
 endif()
 set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED ON)
 
+set(_saved_cxx_flags_debug "${CMAKE_CXX_FLAGS_DEBUG}")
+set(_saved_c_flags_debug "${CMAKE_C_FLAGS_DEBUG}")
+if(MSVC)
+  string(REGEX REPLACE "(/|-)O[d012x]|(/|-)Ob[012]|(/|-)RTC[1csu]+" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  string(REGEX REPLACE "(/|-)O[d012x]|(/|-)Ob[012]|(/|-)RTC[1csu]+" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /O2 /Ob2")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /O2 /Ob2")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  string(REGEX REPLACE "-O[0123sg]" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  string(REGEX REPLACE "-O[0123sg]" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O2")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O2")
+endif()
+
 _renderer_fetch_dep(
         splishsplash
         https://github.com/InteractiveComputerGraphics/SPlisHSPlasH.git
         dba6b26b9387ab6bdd187d6df0a7c9d490d03500 # master
 )
+
+set(CMAKE_CXX_FLAGS_DEBUG "${_saved_cxx_flags_debug}")
+set(CMAKE_C_FLAGS_DEBUG "${_saved_c_flags_debug}")
+unset(_saved_cxx_flags_debug)
+unset(_saved_c_flags_debug)
 
 if(_has_saved_ep_disconnected)
   set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED "${_saved_ep_disconnected}")
@@ -140,6 +159,63 @@ endif()
 get_directory_property(_sph_opts DIRECTORY "${splishsplash_SOURCE_DIR}" COMPILE_OPTIONS)
 if(_sph_opts)
   target_compile_options(SPlisHSPlasH PUBLIC ${_sph_opts})
+endif()
+target_compile_definitions(SPlisHSPlasH PRIVATE EIGEN_NO_DEBUG)
+
+set(_sph_ns_opt_stamp "")
+if(TARGET Ext_NeighborhoodSearch AND EXT_CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(_sph_ns_cxx_debug "")
+  if(MSVC)
+    set(_sph_ns_cxx_debug "/MDd /Zi /O2 /Ob2")
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(_sph_ns_cxx_debug "-g -O2")
+  endif()
+  if(_sph_ns_cxx_debug)
+    ExternalProject_Get_Property(Ext_NeighborhoodSearch SOURCE_DIR BINARY_DIR)
+    set(_sph_ns_opt_script "${CMAKE_BINARY_DIR}/CMakeFiles/optimize_ns_debug.cmake")
+    set(_sph_ns_opt_stamp "${CMAKE_BINARY_DIR}/CMakeFiles/Ext_NeighborhoodSearch-optimize-debug.stamp")
+    file(WRITE "${_sph_ns_opt_script}"
+"set(_cache_file \"${BINARY_DIR}/CMakeCache.txt\")
+set(_want \"${_sph_ns_cxx_debug}\")
+set(_needs_rebuild TRUE)
+if(EXISTS \"\${_cache_file}\")
+  file(READ \"\${_cache_file}\" _cache_text)
+  string(FIND \"\${_cache_text}\" \"CMAKE_CXX_FLAGS_DEBUG:STRING=\${_want}\" _pos)
+  if(NOT _pos EQUAL -1)
+    set(_needs_rebuild FALSE)
+  endif()
+endif()
+if(_needs_rebuild)
+  execute_process(
+    COMMAND \"${CMAKE_COMMAND}\" -S \"${SOURCE_DIR}\" -B \"${BINARY_DIR}\" \"-DCMAKE_CXX_FLAGS_DEBUG=\${_want}\"
+    RESULT_VARIABLE _res
+  )
+  if(NOT _res EQUAL 0)
+    message(FATAL_ERROR \"Failed to configure optimized Debug flags for CompactNSearch\")
+  endif()
+  execute_process(
+    COMMAND \"${CMAKE_COMMAND}\" --build \"${BINARY_DIR}\" --target install
+    RESULT_VARIABLE _res
+  )
+  if(NOT _res EQUAL 0)
+    message(FATAL_ERROR \"Failed to build optimized Debug CompactNSearch\")
+  endif()
+endif()
+")
+    add_custom_command(
+            OUTPUT "${_sph_ns_opt_stamp}"
+            COMMAND ${CMAKE_COMMAND} -P "${_sph_ns_opt_script}"
+            COMMAND ${CMAKE_COMMAND} -E touch "${_sph_ns_opt_stamp}"
+            DEPENDS
+              "${splishsplash_BINARY_DIR}/CMakeFiles/Ext_NeighborhoodSearch-complete"
+              "${_sph_ns_opt_script}"
+            COMMENT "Optimizing CompactNSearch Debug build"
+    )
+    unset(_sph_ns_opt_script)
+    unset(SOURCE_DIR)
+    unset(BINARY_DIR)
+  endif()
+  unset(_sph_ns_cxx_debug)
 endif()
 
 set(CMAKE_MODULE_PATH "${_saved_module_path}")
@@ -165,10 +241,15 @@ if(CMAKE_GENERATOR MATCHES "Ninja")
   set(_sph_ns_lib "${CMAKE_BINARY_DIR}/extern/install/NeighborhoodSearch/lib/${CMAKE_STATIC_LIBRARY_PREFIX}CompactNSearch${_sph_ext_suffix}${CMAKE_STATIC_LIBRARY_SUFFIX}")
   set(_sph_dg_lib "${CMAKE_BINARY_DIR}/extern/install/Discregrid/lib/${CMAKE_STATIC_LIBRARY_PREFIX}Discregrid${_sph_ext_suffix}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
+  set(_sph_ns_deps "${splishsplash_BINARY_DIR}/CMakeFiles/Ext_NeighborhoodSearch-complete")
+  if(_sph_ns_opt_stamp)
+    list(APPEND _sph_ns_deps "${_sph_ns_opt_stamp}")
+  endif()
+
   add_custom_command(
           OUTPUT "${_sph_ns_lib}"
           COMMAND ${CMAKE_COMMAND} -E touch_nocreate "${_sph_ns_lib}"
-          DEPENDS "${splishsplash_BINARY_DIR}/CMakeFiles/Ext_NeighborhoodSearch-complete"
+          DEPENDS ${_sph_ns_deps}
           COMMENT "Ensuring CompactNSearch library timestamp"
   )
   add_custom_command(
@@ -179,5 +260,10 @@ if(CMAKE_GENERATOR MATCHES "Ninja")
   )
   add_custom_target(_sph_external_libs DEPENDS "${_sph_ns_lib}" "${_sph_dg_lib}")
   add_dependencies(SPlisHSPlasH _sph_external_libs)
+  unset(_sph_ns_deps)
+elseif(_sph_ns_opt_stamp)
+  add_custom_target(_sph_optimize_ns DEPENDS "${_sph_ns_opt_stamp}")
+  add_dependencies(SPlisHSPlasH _sph_optimize_ns)
 endif()
+unset(_sph_ns_opt_stamp)
 

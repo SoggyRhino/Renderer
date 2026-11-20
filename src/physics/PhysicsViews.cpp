@@ -7,6 +7,16 @@
 #include "physics/objects/Box.h"
 #include "physics/objects/FluidObject.h"
 
+void BoxView::setActive(const bool active) {
+  assert(box != nullptr);
+  box->setActive(active);
+}
+
+bool BoxView::isActive() const {
+  assert(box != nullptr);
+  return box->isActive();
+}
+
 glm::vec3 BoxView::position() const {
   assert(box != nullptr);
   return box->getPosition();

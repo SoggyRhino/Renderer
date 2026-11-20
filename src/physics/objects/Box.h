@@ -25,6 +25,10 @@ public:
 
   [[nodiscard]] bool isDynamic() const override { return dynamic; }
 
+  void setActive(bool isActive) override;
+  [[nodiscard]] bool isActive() const override { return active; }
+  void syncActiveState() override;
+
   [[nodiscard]] const glm::vec3& getPosition() const { return position; }
   [[nodiscard]] const glm::quat& getRotation() const { return rotation; }
   [[nodiscard]] const glm::vec3& getHalfExtents() const { return halfExtents; }
@@ -57,6 +61,7 @@ private:
   glm::vec3 halfExtents{0.5F};
 
   bool dynamic = false;
+  bool active = true;
   float density = 1000.0F;
   float mass = 1.0F;
   float invInertia = 0.0F;

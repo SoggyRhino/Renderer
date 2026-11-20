@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cstddef>
+#include <optional>
 #include <span>
 
 #include <glm/glm.hpp>
 
+#include "physics/PhysicsViews.h"
 #include "physics/objects/PhysicsObject.h"
 
 namespace SPH {
@@ -23,6 +25,9 @@ public:
 
   void resetPhysics() override {
   }
+
+  void enforceLimits(float maxSpeed,
+                     const std::optional<PhysicsBounds>& worldBounds) const;
 
   [[nodiscard]] std::size_t getParticleCount() const;
   [[nodiscard]] glm::vec3 getParticlePosition(std::size_t index) const;

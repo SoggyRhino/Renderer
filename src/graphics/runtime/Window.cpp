@@ -55,6 +55,8 @@ Window::Window(const WindowConfig& config) :
   glfwSetWindowUserPointer(window, this);
   glfwSetFramebufferSizeCallback(window, resize);
   glfwSetKeyCallback(window, key);
+  glfwSetCursorPosCallback(window, cursorPos);
+  glfwSetMouseButtonCallback(window, mouseButton);
   gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
   glfwSwapInterval(config.vsync ? 1 : 0);
 
@@ -83,11 +85,18 @@ bool Window::shouldClose() const {
   return glfwWindowShouldClose(window);
 }
 
-void Window::setShowCursor(const bool show) const {
+void Window::setShowCursor(const bool show) {
+  showCursor = show;
+  if (!showCursor) {
+    rightMouseLook = false;
+  }
   glfwSetInputMode(
       window,
       GLFW_CURSOR,
-      show ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+      (showCursor && !rightMouseLook) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+  if (onMouseLookReset) {
+    onMouseLookReset();
+  }
 }
 
 void Window::setResizeCallback(std::function<void(int, int)> callback) {
@@ -98,8 +107,20 @@ void Window::setKeyCallback(std::function<void(Key, KeyAction)> callback) {
   onKey = std::move(callback);
 }
 
+void Window::setMouseCallback(std::function<void(float, float)> callback) {
+  onMouse = std::move(callback);
+}
+
+void Window::setMouseLookResetCallback(std::function<void()> callback) {
+  onMouseLookReset = std::move(callback);
+}
+
 void Window::setKeyboardCaptureQuery(std::function<bool()> query) {
   capturesKeyboard = std::move(query);
+}
+
+void Window::setMouseCaptureQuery(std::function<bool()> query) {
+  capturesMouse = std::move(query);
 }
 
 void Window::logError(int error, const char* description) {
@@ -185,5 +206,50 @@ void Window::key(
 
   if (self->onKey) {
     self->onKey(key, action);
+  }
+}
+
+void Window::cursorPos(
+    GLFWwindow* window,
+    const double xpos,
+    const double ypos) {
+  const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+  if (!self || (!self->rightMouseLook && self->showCursor)) {
+    return;
+  }
+
+  if (self->onMouse) {
+    self->onMouse(static_cast<float>(xpos), static_cast<float>(ypos));
+  }
+}
+
+void Window::mouseButton(
+    GLFWwindow* window,
+    const int button,
+    const int action,
+    const int) {
+  auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window));
+  if (!self || button != GLFW_MOUSE_BUTTON_RIGHT) {
+    return;
+  }
+
+  if (action == GLFW_PRESS) {
+    if (!self->showCursor || (self->capturesMouse && self->capturesMouse())) {
+      return;
+    }
+    self->rightMouseLook = true;
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (self->onMouseLookReset) {
+      self->onMouseLookReset();
+    }
+  } else if (action == GLFW_RELEASE && self->rightMouseLook) {
+    self->rightMouseLook = false;
+    glfwSetInputMode(
+        window,
+        GLFW_CURSOR,
+        self->showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    if (self->onMouseLookReset) {
+      self->onMouseLookReset();
+    }
   }
 }

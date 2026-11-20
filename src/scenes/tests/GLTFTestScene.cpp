@@ -30,6 +30,14 @@ void GLTFTestScene::updateInput(const double dt, const InputState& input) {
   cameraController.update(dt, input);
 }
 
+void GLTFTestScene::handleMouseMovement(const float x, const float y) {
+  cameraController.onMouseMovement(x, y);
+}
+
+void GLTFTestScene::resetMouseMovement() {
+  cameraController.resetMouse();
+}
+
 void GLTFTestScene::handleWindowResize(const int width, const int height) {
   Scene::handleWindowResize(width, height);
   cameraController.onResize(width, height);

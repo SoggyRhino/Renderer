@@ -1,6 +1,7 @@
 #include "physics/PhysicsEngine.h"
 
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 #include <utility>
 
@@ -62,14 +63,26 @@ PhysicsEngine::Builder::Builder(const PhysicsConfig& engineConfig)
 
   SPH::TimeManager::getCurrent()->setTimeStepSize(config.fixedTimeStep);
   if (SPH::TimeStep* timeStep = sim->getTimeStep()) {
-    timeStep->setValue(SPH::TimeStepDFSPH::USE_DIVERGENCE_SOLVER, false);
-    timeStep->setValue(SPH::TimeStepDFSPH::MAX_ERROR, 1.5F);
+    timeStep->setValue(SPH::TimeStepDFSPH::USE_DIVERGENCE_SOLVER, true);
+    timeStep->setValue(SPH::TimeStepDFSPH::MAX_ERROR, 0.1F);
+    timeStep->setValue(SPH::TimeStepDFSPH::MAX_ERROR_V, 0.2F);
     timeStep->setValue(SPH::TimeStepDFSPH::MIN_ITERATIONS, 1u);
-    timeStep->setValue(SPH::TimeStepDFSPH::MAX_ITERATIONS, 4u);
+    timeStep->setValue(SPH::TimeStepDFSPH::MAX_ITERATIONS, 16u);
+    timeStep->setValue(SPH::TimeStepDFSPH::MAX_ITERATIONS_V, 8u);
   }
 }
 
 PhysicsEngine::Builder::~Builder() = default;
+
+PhysicsEngine::Builder& PhysicsEngine::Builder::setWorldBounds(
+    const glm::vec3& minCorner,
+    const glm::vec3& maxCorner) {
+  config.worldBounds = PhysicsBounds{
+      .min = glm::min(minCorner, maxCorner),
+      .max = glm::max(minCorner, maxCorner),
+  };
+  return *this;
+}
 
 BoxView PhysicsEngine::Builder::addBox(
     const glm::vec3& position,
@@ -137,6 +150,13 @@ PhysicsEngine PhysicsEngine::Builder::build() {
   sim->performNeighborhoodSearchSort();
   sim->updateBoundaryVolume();
 
+  for (const auto& object : staticObjects) {
+    object->syncActiveState();
+  }
+  for (const auto& object : dynamicObjects) {
+    object->syncActiveState();
+  }
+
   return PhysicsEngine(
       config,
       std::move(simulation),
@@ -164,7 +184,6 @@ PhysicsEngine::PhysicsEngine(PhysicsEngine&& other) noexcept = default;
 
 PhysicsEngine& PhysicsEngine::operator=(PhysicsEngine&& other) noexcept {
   if (this != &other) {
-    // Destroy owned bodies before tearing down the current SPH::Simulation.
     fluids.clear();
     dynamicObjects.clear();
     staticObjects.clear();
@@ -187,29 +206,45 @@ bool PhysicsEngine::step(const double dt) {
     return false;
   }
 
+  if (!std::isfinite(dt) || dt <= 0.0) {
+    return false;
+  }
+
   SPH::TimeStep* timeStep = SPH::Simulation::getCurrent()->getTimeStep();
   if (timeStep == nullptr) {
     return false;
   }
 
-  constexpr double kMaxFrameDt = 0.05;
-  constexpr int kMaxSubstepsPerFrame = 10;
+  constexpr double kMaxFrameDt = 1.0 / 30.0;
+  constexpr int kMaxSubstepsPerFrame = 4;
 
-  const double scale = timeScale;
-  const double maxAccumulator = kMaxFrameDt * scale;
+  const double scale = std::max(0.0, static_cast<double>(timeScale));
+  if (scale <= 0.0) {
+    return false;
+  }
+
   const double frameDt = std::min(dt, kMaxFrameDt) * scale;
-  simAccumulator = std::min(simAccumulator + frameDt, maxAccumulator);
+  simAccumulator += frameDt;
 
   SPH::TimeManager* timeManager = SPH::TimeManager::getCurrent();
   bool stepped = false;
 
-  for (int substep = 0;
-       simAccumulator > 0.0 && substep < kMaxSubstepsPerFrame;
-       ++substep) {
+  for (int substep = 0; substep < kMaxSubstepsPerFrame; ++substep) {
     const float stepDt = timeManager->getTimeStepSize();
+    if (stepDt <= 0.0F || simAccumulator < static_cast<double>(stepDt)) {
+      break;
+    }
+
     timeStep->step();
 
+    for (const auto& fluid : fluids) {
+      fluid->enforceLimits(config.maxParticleSpeed, config.worldBounds);
+    }
+
     for (const auto& object : dynamicObjects) {
+      if (!object->isActive()) {
+        continue;
+      }
       object->integrate(stepDt, config.gravity);
       resolveStaticCollisions(*object);
       object->syncBoundaryParticles();
@@ -217,6 +252,11 @@ bool PhysicsEngine::step(const double dt) {
 
     simAccumulator -= static_cast<double>(stepDt);
     stepped = true;
+  }
+
+  if (const float nextStepDt = timeManager->getTimeStepSize();
+    nextStepDt > 0.0F && simAccumulator >= static_cast<double>(nextStepDt)) {
+    simAccumulator = 0.0;
   }
 
   return stepped;

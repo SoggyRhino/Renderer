@@ -116,6 +116,13 @@ public:
     glBufferData(target, size, data, usage);
   }
 
+  void setSubData(
+      const GLintptr offset,
+      const GLsizeiptr size,
+      const void* data) const {
+    glNamedBufferSubData(id_, offset, size, data);
+  }
+
   [[nodiscard]] GLuint id() const {
     return id_;
   }

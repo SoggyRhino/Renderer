@@ -10,6 +10,10 @@ if(MINGW)
     add_link_options(-static-libstdc++ -static-libgcc)
 endif()
 
+if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_ITERATOR_DEBUG_LEVEL=0")
+endif()
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Dependencies.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateShadersHeader.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateModelsHeader.cmake)

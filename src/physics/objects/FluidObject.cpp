@@ -1,6 +1,7 @@
 #include "physics/objects/FluidObject.h"
 
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
@@ -25,6 +26,61 @@ FluidObject::FluidObject(
     maxCorner(glm::max(minCornerIn, maxCornerIn)),
     fluidModel(createFluidModel(
         sim, minCorner, maxCorner, particleRadius, xsphViscosity)) {
+}
+
+void FluidObject::enforceLimits(
+    const float maxSpeed,
+    const std::optional<PhysicsBounds>& worldBounds) const {
+  constexpr float kSafetyExtent = 100.0F;
+  const glm::vec3 safetyMin(-kSafetyExtent);
+  const glm::vec3 safetyMax(kSafetyExtent);
+
+  const glm::vec3 minBound = worldBounds
+      ? glm::clamp(glm::min(worldBounds->min, worldBounds->max),
+                   safetyMin, safetyMax)
+      : safetyMin;
+  const glm::vec3 maxBound = worldBounds
+      ? glm::clamp(glm::max(worldBounds->min, worldBounds->max),
+                   safetyMin, safetyMax)
+      : safetyMax;
+
+  const bool hasSpeedLimit = std::isfinite(maxSpeed) && maxSpeed > 0.0F;
+  const Real maxSpeedSq = hasSpeedLimit ? maxSpeed * maxSpeed : 0.0F;
+
+  const unsigned int count = fluidModel.numActiveParticles();
+  for (unsigned int i = 0; i < count; ++i) {
+    Vector3r& pos = fluidModel.getPosition(i);
+    Vector3r& vel = fluidModel.getVelocity(i);
+
+    const bool finitePos = std::isfinite(pos.x()) && std::isfinite(pos.y()) &&
+                           std::isfinite(pos.z());
+    const bool finiteVel = std::isfinite(vel.x()) && std::isfinite(vel.y()) &&
+                           std::isfinite(vel.z());
+    if (!finitePos || !finiteVel) {
+      pos = fluidModel.getPosition0(i);
+      vel.setZero();
+    }
+
+    for (int axis = 0; axis < 3; ++axis) {
+      if (pos[axis] < minBound[axis]) {
+        pos[axis] = minBound[axis];
+        if (vel[axis] < 0.0F) {
+          vel[axis] = 0.0F;
+        }
+      } else if (pos[axis] > maxBound[axis]) {
+        pos[axis] = maxBound[axis];
+        if (vel[axis] > 0.0F) {
+          vel[axis] = 0.0F;
+        }
+      }
+    }
+
+    if (hasSpeedLimit) {
+      if (const Real speedSq = vel.squaredNorm(); speedSq > maxSpeedSq) {
+        vel *= maxSpeed / std::sqrt(speedSq);
+      }
+    }
+  }
 }
 
 std::size_t FluidObject::getParticleCount() const {

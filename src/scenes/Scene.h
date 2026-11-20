@@ -19,7 +19,10 @@ public:
 
   virtual void renderUI() = 0;
 
-  void handleMouseMovement(float x, float y);
+  virtual void handleMouseMovement(float x, float y);
+
+  virtual void resetMouseMovement() {
+  }
 
   [[nodiscard]] bool shouldShowCursor() const;
 

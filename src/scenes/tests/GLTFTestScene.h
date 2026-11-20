@@ -15,6 +15,10 @@ public:
 
   void updateInput(double dt, const InputState& input) override;
 
+  void handleMouseMovement(float x, float y) override;
+
+  void resetMouseMovement() override;
+
   void handleWindowResize(int width, int height) override;
 
   void update(double dt) override;

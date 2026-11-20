@@ -23,6 +23,8 @@ public:
 
   void updateMouse(float x, float y);
 
+  void resetMouse();
+
   void updateControls(double deltaTime, uint8_t activeControls);
 
   [[nodiscard]] glm::vec3 getPosition() const;
@@ -40,11 +42,12 @@ private:
   float height;
   float lastX;
   float lastY;
+  bool firstMouse = true;
 
   float sensitivity = 0.1f;
   float yaw = -90.0f;
   float pitch = 0.0f;
   float fov = 45.0f;
-  float speed = .05;
-  float sprintMultiplier = 1;
+  float speed = 2.5f;
+  float sprintMultiplier = 2.0f;
 };

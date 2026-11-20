@@ -47,11 +47,18 @@ SPlisHSPlasHTestScene::PhysicsScene SPlisHSPlasHTestScene::buildPhysicsScene() {
            kWallHalfThickness}),
   };
 
-  const BoxView cube = builder.addBox(
+  BoxView cube = builder.addBox(
       {0.0F, kCubeStartY, 0.0F},
       glm::vec3(kCubeHalfExtent),
       true,
       kCubeDensity);
+  cube.setActive(false);
+
+  builder.setWorldBounds(
+      {-kBoxHalfExtent + 0.5F * kParticleRadius, 0.5F * kParticleRadius,
+       -kBoxHalfExtent + 0.5F * kParticleRadius},
+      {kBoxHalfExtent - 0.5F * kParticleRadius, kBoxHeight * 2.0F,
+       kBoxHalfExtent - 0.5F * kParticleRadius});
 
   const FluidView water = builder.addFluid(
       {-kBoxHalfExtent + kFluidMargin, kFluidMargin,
@@ -85,7 +92,6 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
   });
   glEnable(GL_PROGRAM_POINT_SIZE);
 
-  // Position the simulation box in front of the default camera with a slight tilt
   sceneTransform = glm::translate(glm::mat4(1.0F),
                                   glm::vec3(0.0F, -0.75F, -4.0F));
   sceneTransform = glm::rotate(sceneTransform, glm::radians(20.0F),
@@ -93,12 +99,21 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
   sceneTransform = glm::rotate(sceneTransform, glm::radians(-30.0F),
                                glm::vec3(0.0F, 1.0F, 0.0F));
 
+  physics.cube.setActive(showCube);
   particleMesh.upload(physics.water.particles());
 }
 
 void SPlisHSPlasHTestScene::updateInput(const double dt,
                                         const InputState& input) {
   cameraController.update(dt, input);
+}
+
+void SPlisHSPlasHTestScene::handleMouseMovement(const float x, const float y) {
+  cameraController.onMouseMovement(x, y);
+}
+
+void SPlisHSPlasHTestScene::resetMouseMovement() {
+  cameraController.resetMouse();
 }
 
 void SPlisHSPlasHTestScene::handleWindowResize(const int width,
@@ -109,6 +124,7 @@ void SPlisHSPlasHTestScene::handleWindowResize(const int width,
 
 void SPlisHSPlasHTestScene::update(const double dt) {
   waterMaterial.pointSize = pointSize;
+  physics.cube.setActive(showCube);
   physics.engine.setTimeScale(timeScale);
   physics.engine.setPaused(pausePhysics);
   if (physics.engine.step(dt)) {

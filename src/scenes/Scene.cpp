@@ -3,6 +3,14 @@
 Scene::Scene(const int windowWidth, const int windowHeight) :
   windowWidth(windowWidth),
   windowHeight(windowHeight) {
+  bind(Key::Tab, [this] {
+    showCursor = !showCursor;
+    showUI = showCursor;
+  });
+  bind(Key::Escape, [this] {
+    showCursor = true;
+    showUI = true;
+  });
 }
 
 void Scene::handleMouseMovement(float x, float y) {

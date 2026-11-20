@@ -19,10 +19,15 @@ ImGuiLayer::ImGuiLayer(Window& window) : window(window) {
       [] {
         return ImGui::GetIO().WantCaptureKeyboard;
       });
+  window.setMouseCaptureQuery(
+      [] {
+        return ImGui::GetIO().WantCaptureMouse;
+      });
 }
 
 ImGuiLayer::~ImGuiLayer() {
   window.setKeyboardCaptureQuery({});
+  window.setMouseCaptureQuery({});
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

@@ -12,6 +12,8 @@ public:
 
   void onMouseMovement(float x, float y);
 
+  void resetMouse();
+
   void update(double dt, const InputState& input);
 
   [[nodiscard]] Camera& getCamera() {

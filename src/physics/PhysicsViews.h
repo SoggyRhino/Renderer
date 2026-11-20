@@ -9,15 +9,23 @@
 class Box;
 class FluidObject;
 
+struct PhysicsBounds {
+  glm::vec3 min{0.0F};
+  glm::vec3 max{0.0F};
+};
+
 class BoxView {
 public:
   BoxView() = default;
 
-  explicit BoxView(const Box& target) : box(&target) {
+  explicit BoxView(Box& target) : box(&target) {
   }
 
   [[nodiscard]] bool valid() const { return box != nullptr; }
   [[nodiscard]] explicit operator bool() const { return valid(); }
+
+  void setActive(bool active);
+  [[nodiscard]] bool isActive() const;
 
   [[nodiscard]] glm::vec3 position() const;
   [[nodiscard]] glm::quat rotation() const;
@@ -25,7 +33,7 @@ public:
   [[nodiscard]] glm::mat4 modelMatrix() const;
 
 private:
-  const Box* box = nullptr;
+  Box* box = nullptr;
 };
 
 class FluidView {

@@ -10,6 +10,10 @@ void CameraController::onMouseMovement(const float x, const float y) {
   camera.updateMouse(x, y);
 }
 
+void CameraController::resetMouse() {
+  camera.resetMouse();
+}
+
 void CameraController::update(const double dt, const InputState& input) {
   uint8_t controls = Camera::NONE;
 

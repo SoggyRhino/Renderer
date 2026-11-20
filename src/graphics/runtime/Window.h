@@ -42,13 +42,19 @@ public:
     return inputState;
   }
 
-  void setShowCursor(bool show) const;
+  void setShowCursor(bool show);
 
   void setResizeCallback(std::function<void(int, int)> callback);
 
   void setKeyCallback(std::function<void(Key, KeyAction)> callback);
 
+  void setMouseCallback(std::function<void(float, float)> callback);
+
+  void setMouseLookResetCallback(std::function<void()> callback);
+
   void setKeyboardCaptureQuery(std::function<bool()> query);
+
+  void setMouseCaptureQuery(std::function<bool()> query);
 
 private:
   const std::string title;
@@ -57,9 +63,14 @@ private:
 
   GLFWwindow* window{};
   InputState inputState;
+  bool showCursor = true;
+  bool rightMouseLook = false;
   std::function<void(int, int)> onResize;
   std::function<void(Key, KeyAction)> onKey;
+  std::function<void(float, float)> onMouse;
+  std::function<void()> onMouseLookReset;
   std::function<bool()> capturesKeyboard;
+  std::function<bool()> capturesMouse;
 
   [[nodiscard]] GLFWwindow* nativeHandle() const {
     return window;
@@ -71,6 +82,12 @@ private:
       GLFWwindow* window,
       int key,
       int scancode,
+      int action,
+      int mods);
+  static void cursorPos(GLFWwindow* window, double xpos, double ypos);
+  static void mouseButton(
+      GLFWwindow* window,
+      int button,
       int action,
       int mods);
 
