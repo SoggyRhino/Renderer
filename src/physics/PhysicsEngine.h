@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -17,16 +18,17 @@ struct PhysicsConfig {
   float fixedTimeStep = 0.004F;
   glm::vec3 gravity{0.0F, -9.81F, 0.0F};
   float maxParticleSpeed = 12.0F;
+  int presettleSteps = 25;
   std::optional<PhysicsBounds> worldBounds{};
 };
 
 class PhysicsEngine {
   struct SimulationSession {
-    bool active = false;
+    std::uint64_t sessionId = 0;
 
     SimulationSession() = default;
 
-    explicit SimulationSession(const bool isActive) : active(isActive) {
+    explicit SimulationSession(const std::uint64_t id) : sessionId(id) {
     }
 
     ~SimulationSession();
@@ -36,6 +38,8 @@ class PhysicsEngine {
 
     SimulationSession(SimulationSession&& other) noexcept;
     SimulationSession& operator=(SimulationSession&& other) noexcept;
+
+    [[nodiscard]] bool isActive() const { return sessionId != 0; }
   };
 
 public:
@@ -61,7 +65,8 @@ public:
     FluidView addFluid(
         const glm::vec3& minCorner,
         const glm::vec3& maxCorner,
-        float xsphViscosity = 0.02F);
+        float xsphViscosity = 0.02F,
+        bool presettle = true);
 
     [[nodiscard]] PhysicsEngine build();
 
@@ -82,6 +87,8 @@ public:
   PhysicsEngine(PhysicsEngine&& other) noexcept;
   PhysicsEngine& operator=(PhysicsEngine&& other) noexcept;
 
+  void presettleFluids();
+  void presettleFluids(int steps, float velocityDamping = 0.85F);
   bool step(double dt);
   void reset();
 

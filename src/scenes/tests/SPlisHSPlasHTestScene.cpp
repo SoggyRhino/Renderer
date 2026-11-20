@@ -1,5 +1,6 @@
 #include "SPlisHSPlasHTestScene.h"
 
+#include <algorithm>
 #include <imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -7,68 +8,71 @@
 #include "shaders.h"
 
 namespace {
-constexpr float kParticleRadius = 0.035F;
+constexpr float kMinParticleRadius = 0.015F;
+constexpr float kMaxParticleRadius = 0.080F;
 constexpr float kBoxHalfExtent = 0.8F;
 constexpr float kBoxHeight = 1.6F;
 constexpr float kWallHalfThickness = 0.05F;
-constexpr float kFluidMargin = 1.25F * kParticleRadius;
+constexpr float kFluidMarginFactor = 1.25F;
 constexpr float kPoolHeight = 0.50F;
 constexpr float kCubeHalfExtent = 0.2F;
-constexpr float kCubeStartY = 1.05F;
+constexpr float kCubeStartY = 5.05F;
 constexpr float kCubeDensity = 1200.0F;
 } // namespace
 
-SPlisHSPlasHTestScene::PhysicsScene SPlisHSPlasHTestScene::buildPhysicsScene() {
-  PhysicsEngine::Builder builder;
+SPlisHSPlasHTestScene::PhysicsScene SPlisHSPlasHTestScene::buildPhysicsScene(
+    const float radius) {
+  const float safeRadius =
+      std::clamp(radius, kMinParticleRadius, kMaxParticleRadius);
+  const float fluidMargin = kFluidMarginFactor * safeRadius;
 
-  const std::array<BoxView, 5> containers = {
-      // Floor
-      builder.addBox(
-          {0.0F, -kWallHalfThickness, 0.0F},
-          {kBoxHalfExtent + 2.0F * kWallHalfThickness, kWallHalfThickness,
-           kBoxHalfExtent + 2.0F * kWallHalfThickness}),
-      // -X wall
-      builder.addBox(
-          {-(kBoxHalfExtent + kWallHalfThickness), 0.5F * kBoxHeight, 0.0F},
-          {kWallHalfThickness, 0.5F * kBoxHeight, kBoxHalfExtent}),
-      // +X wall
-      builder.addBox(
-          {kBoxHalfExtent + kWallHalfThickness, 0.5F * kBoxHeight, 0.0F},
-          {kWallHalfThickness, 0.5F * kBoxHeight, kBoxHalfExtent}),
-      // -Z wall
-      builder.addBox(
-          {0.0F, 0.5F * kBoxHeight, -(kBoxHalfExtent + kWallHalfThickness)},
-          {kBoxHalfExtent + 2.0F * kWallHalfThickness, 0.5F * kBoxHeight,
-           kWallHalfThickness}),
-      // +Z wall
-      builder.addBox(
-          {0.0F, 0.5F * kBoxHeight, kBoxHalfExtent + kWallHalfThickness},
-          {kBoxHalfExtent + 2.0F * kWallHalfThickness, 0.5F * kBoxHeight,
-           kWallHalfThickness}),
-  };
+  PhysicsEngine::Builder builder(
+      PhysicsConfig{.particleRadius = safeRadius});
+
+  // Floor
+  builder.addBox(
+      {0.0F, -kWallHalfThickness, 0.0F},
+      {kBoxHalfExtent + 2.0F * kWallHalfThickness, kWallHalfThickness,
+       kBoxHalfExtent + 2.0F * kWallHalfThickness});
+  // -X wall
+  builder.addBox(
+      {-(kBoxHalfExtent + kWallHalfThickness), 0.5F * kBoxHeight, 0.0F},
+      {kWallHalfThickness, 0.5F * kBoxHeight, kBoxHalfExtent});
+  // +X wall
+  builder.addBox(
+      {kBoxHalfExtent + kWallHalfThickness, 0.5F * kBoxHeight, 0.0F},
+      {kWallHalfThickness, 0.5F * kBoxHeight, kBoxHalfExtent});
+  // -Z wall
+  builder.addBox(
+      {0.0F, 0.5F * kBoxHeight, -(kBoxHalfExtent + kWallHalfThickness)},
+      {kBoxHalfExtent + 2.0F * kWallHalfThickness, 0.5F * kBoxHeight,
+       kWallHalfThickness});
+  // +Z wall
+  builder.addBox(
+      {0.0F, 0.5F * kBoxHeight, kBoxHalfExtent + kWallHalfThickness},
+      {kBoxHalfExtent + 2.0F * kWallHalfThickness, 0.5F * kBoxHeight,
+       kWallHalfThickness});
 
   BoxView cube = builder.addBox(
       {0.0F, kCubeStartY, 0.0F},
       glm::vec3(kCubeHalfExtent),
       true,
       kCubeDensity);
-  cube.setActive(false);
 
   builder.setWorldBounds(
-      {-kBoxHalfExtent + 0.5F * kParticleRadius, 0.5F * kParticleRadius,
-       -kBoxHalfExtent + 0.5F * kParticleRadius},
-      {kBoxHalfExtent - 0.5F * kParticleRadius, kBoxHeight * 2.0F,
-       kBoxHalfExtent - 0.5F * kParticleRadius});
+      {-kBoxHalfExtent + 0.5F * safeRadius, 0.5F * safeRadius,
+       -kBoxHalfExtent + 0.5F * safeRadius},
+      {kBoxHalfExtent - 0.5F * safeRadius, kBoxHeight * 2.0F,
+       kBoxHalfExtent - 0.5F * safeRadius});
 
   const FluidView water = builder.addFluid(
-      {-kBoxHalfExtent + kFluidMargin, kFluidMargin,
-       -kBoxHalfExtent + kFluidMargin},
-      {kBoxHalfExtent - kFluidMargin, kPoolHeight,
-       kBoxHalfExtent - kFluidMargin});
+      {-kBoxHalfExtent + fluidMargin, fluidMargin,
+       -kBoxHalfExtent + fluidMargin},
+      {kBoxHalfExtent - fluidMargin, kPoolHeight,
+       kBoxHalfExtent - fluidMargin});
 
   return {
       .engine = builder.build(),
-      .containerBoxes = containers,
       .cube = cube,
       .water = water,
   };
@@ -79,11 +83,17 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
     const int windowHeight)
   : Scene(windowWidth, windowHeight),
     program(SPH_SIMPLE_VERT, SPH_SIMPLE_FRAG),
+    sphereProgram(SPH_COLORED_SPHERES_VERT, SPH_COLORED_SPHERES_FRAG),
     cameraController(windowWidth, windowHeight),
-    containerMaterial{program, {0.35F, 0.38F, 0.45F}},
     cubeMaterial{program, {0.95F, 0.45F, 0.2F}},
-    waterMaterial{program, {0.2F, 0.65F, 1.0F}, pointSize},
-    physics(buildPhysicsScene()) {
+    waterMaterial{
+        .program = sphereProgram,
+        .particleRadius = particleRadius,
+        .viewportHeight = static_cast<float>(windowHeight),
+        .minHeight = kFluidMarginFactor * particleRadius,
+        .maxHeight = kPoolHeight * 1.45F,
+    },
+    physics(buildPhysicsScene(particleRadius)) {
   RenderState::apply({
       .clearColor = {0.08F, 0.09F, 0.12F, 1.0F},
       .depthTest = true,
@@ -99,7 +109,6 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
   sceneTransform = glm::rotate(sceneTransform, glm::radians(-30.0F),
                                glm::vec3(0.0F, 1.0F, 0.0F));
 
-  physics.cube.setActive(showCube);
   particleMesh.upload(physics.water.particles());
   lightingManager.addLight({2.0F, 3.0F, 2.0F}, {1.0F, 1.0F, 1.0F}, 3.0F);
 }
@@ -121,11 +130,10 @@ void SPlisHSPlasHTestScene::handleWindowResize(const int width,
                                                const int height) {
   Scene::handleWindowResize(width, height);
   cameraController.onResize(width, height);
+  waterMaterial.viewportHeight = static_cast<float>(height);
 }
 
 void SPlisHSPlasHTestScene::update(const double dt) {
-  waterMaterial.pointSize = pointSize;
-  physics.cube.setActive(showCube);
   physics.engine.setTimeScale(timeScale);
   physics.engine.setPaused(pausePhysics);
   if (physics.engine.step(dt)) {
@@ -139,22 +147,12 @@ void SPlisHSPlasHTestScene::render() const {
                                                  getProjectionMatrix();
   const auto& lights = lightingManager.getLights();
 
-  if (showContainer) {
-    for (const BoxView& box : physics.containerBoxes) {
-      containerMaterial.bind(sceneTransform * box.modelMatrix(), view,
-                             projection, lights);
-      boxMesh.draw();
-    }
-  }
-
   waterMaterial.bind(sceneTransform, view, projection, lights);
   particleMesh.draw();
 
-  if (showCube) {
-    cubeMaterial.bind(sceneTransform * physics.cube.modelMatrix(), view,
-                      projection, lights);
-    boxMesh.draw();
-  }
+  cubeMaterial.bind(sceneTransform * physics.cube.modelMatrix(), view,
+                    projection, lights);
+  boxMesh.draw();
 }
 
 void SPlisHSPlasHTestScene::renderUI() {
@@ -166,12 +164,15 @@ void SPlisHSPlasHTestScene::renderUI() {
   ImGui::Checkbox("Pause Physics", &pausePhysics);
   ImGui::SameLine();
   if (ImGui::Button("Reset")) {
-    physics.engine.reset();
+    particleRadius = std::clamp(particleRadius, kMinParticleRadius,
+                                kMaxParticleRadius);
+    physics = buildPhysicsScene(particleRadius);
+    waterMaterial.particleRadius = particleRadius;
+    waterMaterial.minHeight = kFluidMarginFactor * particleRadius;
     particleMesh.upload(physics.water.particles());
   }
-  ImGui::Checkbox("Show Falling Cube", &showCube);
-  ImGui::Checkbox("Show Container", &showContainer);
-  ImGui::SliderFloat("Point Size", &pointSize, 2.0F, 20.0F);
+  ImGui::SliderFloat("Particle Radius", &particleRadius, kMinParticleRadius,
+                     kMaxParticleRadius, "%.3f");
   ImGui::SliderFloat("Time Scale", &timeScale, 0.1F, 2.0F, "%.2fx");
   ImGui::Text("Particles: %zu", physics.water.particleCount());
   ImGui::Text("Sim Time: %.3f s",

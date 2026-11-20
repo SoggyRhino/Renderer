@@ -1,6 +1,7 @@
 #include "physics/PhysicsEngine.h"
 
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 #include <utility>
 
@@ -20,24 +21,33 @@ INIT_LOGGING
 INIT_TIMING
 INIT_COUNTING
 
+namespace {
+std::uint64_t gNextSessionId = 1;
+std::uint64_t gActiveSessionId = 0;
+} // namespace
+
 PhysicsEngine::SimulationSession::~SimulationSession() {
-  if (active && SPH::Simulation::hasCurrent()) {
+  if (sessionId != 0 && sessionId == gActiveSessionId &&
+      SPH::Simulation::hasCurrent()) {
     delete SPH::Simulation::getCurrent();
+    gActiveSessionId = 0;
   }
 }
 
 PhysicsEngine::SimulationSession::SimulationSession(
     SimulationSession&& other) noexcept
-  : active(std::exchange(other.active, false)) {
+  : sessionId(std::exchange(other.sessionId, 0)) {
 }
 
 PhysicsEngine::SimulationSession& PhysicsEngine::SimulationSession::operator=(
     SimulationSession&& other) noexcept {
   if (this != &other) {
-    if (active && SPH::Simulation::hasCurrent()) {
+    if (sessionId != 0 && sessionId == gActiveSessionId &&
+        SPH::Simulation::hasCurrent()) {
       delete SPH::Simulation::getCurrent();
+      gActiveSessionId = 0;
     }
-    active = std::exchange(other.active, false);
+    sessionId = std::exchange(other.sessionId, 0);
   }
   return *this;
 }
@@ -46,10 +56,12 @@ PhysicsEngine::Builder::Builder(const PhysicsConfig& engineConfig)
   : config(engineConfig) {
   if (SPH::Simulation::hasCurrent()) {
     delete SPH::Simulation::getCurrent();
+    gActiveSessionId = 0;
   }
 
   SPH::Simulation* sim = SPH::Simulation::getCurrent();
-  simulation = SimulationSession(true);
+  gActiveSessionId = gNextSessionId++;
+  simulation = SimulationSession(gActiveSessionId);
 
   sim->init(config.particleRadius, false);
   sim->setBoundaryHandlingMethod(SPH::BoundaryHandlingMethods::Akinci2012);
@@ -88,7 +100,7 @@ BoxView PhysicsEngine::Builder::addBox(
     const glm::vec3& halfExtents,
     const bool isDynamic,
     const float density) {
-  if (!simulation.active) {
+  if (!simulation.isActive()) {
     throw std::logic_error(
         "Cannot add Box after PhysicsEngine::Builder::build()");
   }
@@ -114,8 +126,9 @@ BoxView PhysicsEngine::Builder::addBox(
 FluidView PhysicsEngine::Builder::addFluid(
     const glm::vec3& minCorner,
     const glm::vec3& maxCorner,
-    const float xsphViscosity) {
-  if (!simulation.active) {
+    const float xsphViscosity,
+    const bool presettle) {
+  if (!simulation.isActive()) {
     throw std::logic_error(
         "Cannot add Fluid after PhysicsEngine::Builder::build()");
   }
@@ -125,15 +138,16 @@ FluidView PhysicsEngine::Builder::addFluid(
       minCorner,
       maxCorner,
       config.particleRadius,
-      xsphViscosity);
+      xsphViscosity,
+      presettle);
 
-  FluidView view(*fluid);
+  const FluidView view(*fluid);
   fluids.push_back(std::move(fluid));
   return view;
 }
 
 PhysicsEngine PhysicsEngine::Builder::build() {
-  if (!simulation.active) {
+  if (!simulation.isActive()) {
     throw std::logic_error("PhysicsEngine::Builder::build() already called");
   }
 
@@ -155,13 +169,18 @@ PhysicsEngine PhysicsEngine::Builder::build() {
   for (const auto& object : dynamicObjects) {
     object->syncActiveState();
   }
+  for (const auto& fluid : fluids) {
+    fluid->syncActiveState();
+  }
 
-  return PhysicsEngine(
+  PhysicsEngine engine(
       config,
       std::move(simulation),
       std::move(staticObjects),
       std::move(dynamicObjects),
       std::move(fluids));
+  engine.presettleFluids();
+  return engine;
 }
 
 PhysicsEngine::PhysicsEngine(
@@ -199,8 +218,89 @@ PhysicsEngine& PhysicsEngine::operator=(PhysicsEngine&& other) noexcept {
   return *this;
 }
 
+void PhysicsEngine::presettleFluids() {
+  presettleFluids(config.presettleSteps);
+}
+
+void PhysicsEngine::presettleFluids(const int steps,
+                                    const float velocityDamping) {
+  if (!simulation.isActive() || !SPH::Simulation::hasCurrent() || steps <= 0 ||
+      fluids.empty()) {
+    return;
+  }
+
+  const bool anyPresettle = std::any_of(
+      fluids.begin(), fluids.end(), [](const auto& fluid) {
+        return fluid->isActive() && fluid->shouldPresettle();
+      });
+  if (!anyPresettle) {
+    return;
+  }
+
+  SPH::Simulation* sim = SPH::Simulation::getCurrent();
+  SPH::TimeStep* timeStep = sim->getTimeStep();
+  if (timeStep == nullptr) {
+    return;
+  }
+
+  std::vector<bool> dynamicActiveStates;
+  dynamicActiveStates.reserve(dynamicObjects.size());
+  for (const auto& object : dynamicObjects) {
+    const bool wasActive = object->isActive();
+    dynamicActiveStates.push_back(wasActive);
+    if (wasActive) {
+      object->setActive(false);
+    }
+  }
+
+  std::vector<bool> fluidActiveStates;
+  fluidActiveStates.reserve(fluids.size());
+  for (const auto& fluid : fluids) {
+    const bool wasActive = fluid->isActive();
+    fluidActiveStates.push_back(wasActive);
+    if (wasActive && !fluid->shouldPresettle()) {
+      fluid->setActive(false);
+    }
+  }
+
+  const float damping = std::isfinite(velocityDamping)
+                            ? std::clamp(velocityDamping, 0.0F, 1.0F)
+                            : 1.0F;
+
+  for (int stepIndex = 0; stepIndex < steps; ++stepIndex) {
+    timeStep->step();
+    for (const auto& fluid : fluids) {
+      if (!fluid->isActive() || !fluid->shouldPresettle()) {
+        continue;
+      }
+      fluid->enforceLimits(config.maxParticleSpeed, config.worldBounds);
+      fluid->applyVelocityDamping(damping);
+    }
+  }
+
+  for (const auto& fluid : fluids) {
+    if (fluid->isActive() && fluid->shouldPresettle()) {
+      fluid->saveSettledStateAsInitial();
+    }
+  }
+
+  for (std::size_t i = 0; i < fluids.size(); ++i) {
+    fluids[i]->setActive(fluidActiveStates[i]);
+  }
+  for (std::size_t i = 0; i < dynamicObjects.size(); ++i) {
+    dynamicObjects[i]->setActive(dynamicActiveStates[i]);
+  }
+
+  sim->reset();
+  SPH::TimeManager::getCurrent()->setTimeStepSize(config.fixedTimeStep);
+  for (const auto& fluid : fluids) {
+    fluid->resetPhysics();
+  }
+  simAccumulator = 0.0;
+}
+
 bool PhysicsEngine::step(const double dt) {
-  if (!simulation.active || paused) {
+  if (!simulation.isActive() || paused) {
     simAccumulator = 0.0;
     return false;
   }
@@ -268,7 +368,7 @@ void PhysicsEngine::resolveStaticCollisions(PhysicsObject& dynamicObject) {
 }
 
 void PhysicsEngine::reset() {
-  if (!simulation.active) {
+  if (!simulation.isActive()) {
     return;
   }
 
@@ -290,7 +390,7 @@ void PhysicsEngine::reset() {
 }
 
 float PhysicsEngine::getSimTime() const {
-  return (simulation.active && SPH::Simulation::hasCurrent())
+  return (simulation.isActive() && SPH::Simulation::hasCurrent())
            ? SPH::TimeManager::getCurrent()->getTime()
            : 0.0F;
 }

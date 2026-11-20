@@ -30,30 +30,27 @@ public:
 private:
   struct PhysicsScene {
     PhysicsEngine engine;
-    std::array<BoxView, 5> containerBoxes;
     BoxView cube;
     FluidView water;
   };
 
-  static PhysicsScene buildPhysicsScene();
+  static PhysicsScene buildPhysicsScene(float particleRadius);
 
   const Program program;
+  const Program sphereProgram;
   CameraController cameraController;
   LightingManager lightingManager;
 
   BoxMesh boxMesh;
   ParticleMesh particleMesh;
 
-  SimpleMaterial containerMaterial;
   SimpleMaterial cubeMaterial;
   ParticleMaterial waterMaterial;
 
+  float particleRadius = 0.035F;
   PhysicsScene physics;
 
   glm::mat4 sceneTransform{1.0F};
   bool pausePhysics = true;
-  bool showCube = false;
-  bool showContainer = false;
-  float pointSize = 8.0F;
   float timeScale = 1.0F;
 };

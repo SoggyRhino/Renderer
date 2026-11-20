@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "SPlisHSPlasH/FluidModel.h"
+#include "SPlisHSPlasH/NeighborhoodSearch.h"
 #include "SPlisHSPlasH/Simulation.h"
 #include "SPlisHSPlasH/XSPH.h"
 
@@ -21,11 +22,56 @@ FluidObject::FluidObject(
     const glm::vec3& minCornerIn,
     const glm::vec3& maxCornerIn,
     const float particleRadius,
-    const float xsphViscosity)
+    const float xsphViscosity,
+    const bool shouldPresettle)
   : minCorner(glm::min(minCornerIn, maxCornerIn)),
     maxCorner(glm::max(minCornerIn, maxCornerIn)),
+    presettle(shouldPresettle),
     fluidModel(createFluidModel(
         sim, minCorner, maxCorner, particleRadius, xsphViscosity)) {
+}
+
+void FluidObject::setActive(const bool isActive) {
+  if (active == isActive) {
+    return;
+  }
+  active = isActive;
+  syncActiveState();
+}
+
+void FluidObject::syncActiveState() {
+  if (!SPH::Simulation::hasCurrent()) {
+    return;
+  }
+  SPH::Simulation* sim = SPH::Simulation::getCurrent();
+  if (!sim->isSimulationInitialized() || sim->getNeighborhoodSearch() == nullptr) {
+    return;
+  }
+  fluidModel.setNumActiveParticles(
+      active ? fluidModel.getNumActiveParticles0() : 0U);
+  sim->getNeighborhoodSearch()->setNeighborhoodSearchActive(
+      fluidModel.getPointSetIndex(), active, active);
+}
+
+void FluidObject::resetPhysics() {
+  syncActiveState();
+}
+
+void FluidObject::applyVelocityDamping(const float factor) const {
+  const unsigned int count = fluidModel.numActiveParticles();
+  for (unsigned int i = 0; i < count; ++i) {
+    fluidModel.getVelocity(i) *= static_cast<Real>(factor);
+  }
+}
+
+void FluidObject::saveSettledStateAsInitial() const {
+  const unsigned int count = fluidModel.numActiveParticles();
+  for (unsigned int i = 0; i < count; ++i) {
+    fluidModel.setPosition0(i, fluidModel.getPosition(i));
+    fluidModel.setVelocity0(i, Vector3r::Zero());
+    fluidModel.setVelocity(i, Vector3r::Zero());
+    fluidModel.getAcceleration(i).setZero();
+  }
 }
 
 void FluidObject::enforceLimits(

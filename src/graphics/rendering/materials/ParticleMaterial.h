@@ -11,6 +11,10 @@ struct ParticleMaterial {
   const Program& program;
   glm::vec3 color{0.2F, 0.65F, 1.0F};
   float pointSize = 8.0F;
+  float particleRadius = 0.035F;
+  float viewportHeight = 0.0F;
+  float minHeight = 0.035F;
+  float maxHeight = 0.72F;
 
   void bind(
       const glm::mat4& model,
@@ -21,8 +25,24 @@ struct ParticleMaterial {
     program.setMatx4fv("model", model);
     program.setMatx4fv("view", view);
     program.setMatx4fv("projection", projection);
-    program.set3fv("uColor", color);
-    program.setFloat("uPointSize", pointSize);
+    if (program.hasUniform("uColor")) {
+      program.set3fv("uColor", color);
+    }
+    if (program.hasUniform("uPointSize")) {
+      program.setFloat("uPointSize", pointSize);
+    }
+    if (program.hasUniform("uParticleRadius")) {
+      program.setFloat("uParticleRadius", particleRadius);
+    }
+    if (program.hasUniform("uViewportHeight")) {
+      program.setFloat("uViewportHeight", viewportHeight);
+    }
+    if (program.hasUniform("uMinHeight")) {
+      program.setFloat("uMinHeight", minHeight);
+    }
+    if (program.hasUniform("uMaxHeight")) {
+      program.setFloat("uMaxHeight", maxHeight);
+    }
     LightingManager::apply(program, lights);
   }
 };
