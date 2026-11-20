@@ -8,9 +8,9 @@
 namespace {
 constexpr std::array kUnitCubeVertices = {
     glm::vec3{-1.0F, -1.0F, -1.0F}, glm::vec3{1.0F, -1.0F, -1.0F},
-    glm::vec3{1.0F, -1.0F, 1.0F},   glm::vec3{-1.0F, -1.0F, 1.0F},
-    glm::vec3{-1.0F, 1.0F, -1.0F},  glm::vec3{1.0F, 1.0F, -1.0F},
-    glm::vec3{1.0F, 1.0F, 1.0F},    glm::vec3{-1.0F, 1.0F, 1.0F},
+    glm::vec3{1.0F, -1.0F, 1.0F}, glm::vec3{-1.0F, -1.0F, 1.0F},
+    glm::vec3{-1.0F, 1.0F, -1.0F}, glm::vec3{1.0F, 1.0F, -1.0F},
+    glm::vec3{1.0F, 1.0F, 1.0F}, glm::vec3{-1.0F, 1.0F, 1.0F},
 };
 
 constexpr std::array<uint32_t, 36> kUnitCubeIndices = {

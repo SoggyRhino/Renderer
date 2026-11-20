@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../graphics/rendering/utils/Camera.h"
+#include "../../graphics/rendering/Camera.h"
 #include "graphics/runtime/Input.h"
 
 class CameraController {

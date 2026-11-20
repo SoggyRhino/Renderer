@@ -3,163 +3,326 @@
 #include <string_view>
 
 struct ModelPath {
-    std::string_view value;
-    constexpr explicit ModelPath(const std::string_view v) : value(v) {}
-    explicit constexpr operator std::string_view() const { return value; }
+  std::string_view value;
+
+  constexpr explicit ModelPath(const std::string_view v) : value(v) {
+  }
+
+  explicit constexpr operator std::string_view() const { return value; }
 };
 
 namespace Models {
-    inline constexpr ModelPath ABeautifulGame{"ABeautifulGame/ABeautifulGame.gltf"};
-    inline constexpr ModelPath AlphaBlendModeTest{"AlphaBlendModeTest/AlphaBlendModeTest.gltf"};
-    inline constexpr ModelPath AnimatedColorsCube{"AnimatedColorsCube/AnimatedColorsCube.gltf"};
-    inline constexpr ModelPath AnimatedCube{"AnimatedCube/AnimatedCube.gltf"};
-    inline constexpr ModelPath AnimatedMorphCube{"AnimatedMorphCube/AnimatedMorphCube.gltf"};
-    inline constexpr ModelPath AnimatedTriangle{"AnimatedTriangle/AnimatedTriangle.gltf"};
-    inline constexpr ModelPath AnimationPointerUVs{"AnimationPointerUVs/AnimationPointerUVs.gltf"};
-    inline constexpr ModelPath AnisotropyBarnLamp{"AnisotropyBarnLamp/AnisotropyBarnLamp.gltf"};
-    inline constexpr ModelPath AnisotropyDiscTest{"AnisotropyDiscTest/AnisotropyDiscTest.gltf"};
-    inline constexpr ModelPath AnisotropyRotationTest{"AnisotropyRotationTest/AnisotropyRotationTest.gltf"};
-    inline constexpr ModelPath AnisotropyStrengthTest{"AnisotropyStrengthTest/AnisotropyStrengthTest.gltf"};
-    inline constexpr ModelPath AntiqueCamera{"AntiqueCamera/AntiqueCamera.gltf"};
-    inline constexpr ModelPath AttenuationTest{"AttenuationTest/AttenuationTest.gltf"};
-    inline constexpr ModelPath Avocado{"Avocado/Avocado.gltf"};
-    inline constexpr ModelPath BarramundiFish{"BarramundiFish/BarramundiFish.gltf"};
-    inline constexpr ModelPath BoomBox{"BoomBox/BoomBox.gltf"};
-    inline constexpr ModelPath BoomBoxWithAxes{"BoomBoxWithAxes/BoomBoxWithAxes.gltf"};
-    inline constexpr ModelPath Box_With_Spaces{"Box With Spaces/Box With Spaces.gltf"};
-    inline constexpr ModelPath Box{"Box/Box.gltf"};
-    inline constexpr ModelPath BoxAnimated{"BoxAnimated/BoxAnimated.gltf"};
-    inline constexpr ModelPath BoxInterleaved{"BoxInterleaved/BoxInterleaved.gltf"};
-    inline constexpr ModelPath BoxTextured{"BoxTextured/BoxTextured.gltf"};
-    inline constexpr ModelPath BoxTexturedNonPowerOfTwo{"BoxTexturedNonPowerOfTwo/BoxTexturedNonPowerOfTwo.gltf"};
-    inline constexpr ModelPath BoxVertexColors{"BoxVertexColors/BoxVertexColors.gltf"};
-    inline constexpr ModelPath BrainStem{"BrainStem/BrainStem.gltf"};
-    inline constexpr ModelPath Cameras{"Cameras/Cameras.gltf"};
-    inline constexpr ModelPath CarConcept{"CarConcept/CarConcept.gltf"};
-    inline constexpr ModelPath CarbonFibre{"CarbonFibre/CarbonFibre.gltf"};
-    inline constexpr ModelPath CesiumMan{"CesiumMan/CesiumMan.gltf"};
-    inline constexpr ModelPath CesiumMilkTruck{"CesiumMilkTruck/CesiumMilkTruck.gltf"};
-    inline constexpr ModelPath ChairDamaskPurplegold{"ChairDamaskPurplegold/ChairDamaskPurplegold.gltf"};
-    inline constexpr ModelPath ChronographWatch{"ChronographWatch/ChronographWatch.gltf"};
-    inline constexpr ModelPath ClearCoatCarPaint{"ClearCoatCarPaint/ClearCoatCarPaint.gltf"};
-    inline constexpr ModelPath ClearCoatTest{"ClearCoatTest/ClearCoatTest.gltf"};
-    inline constexpr ModelPath ClearcoatWicker{"ClearcoatWicker/ClearcoatWicker.gltf"};
-    inline constexpr ModelPath CommercialRefrigerator{"CommercialRefrigerator/CommercialRefrigerator.gltf"};
-    inline constexpr ModelPath CompareAlphaCoverage{"CompareAlphaCoverage/CompareAlphaCoverage.gltf"};
-    inline constexpr ModelPath CompareAmbientOcclusion{"CompareAmbientOcclusion/CompareAmbientOcclusion.gltf"};
-    inline constexpr ModelPath CompareAnisotropy{"CompareAnisotropy/CompareAnisotropy.gltf"};
-    inline constexpr ModelPath CompareBaseColor{"CompareBaseColor/CompareBaseColor.gltf"};
-    inline constexpr ModelPath CompareClearcoat{"CompareClearcoat/CompareClearcoat.gltf"};
-    inline constexpr ModelPath CompareDispersion{"CompareDispersion/CompareDispersion.gltf"};
-    inline constexpr ModelPath CompareEmissiveStrength{"CompareEmissiveStrength/CompareEmissiveStrength.gltf"};
-    inline constexpr ModelPath CompareIor{"CompareIor/CompareIor.gltf"};
-    inline constexpr ModelPath CompareIridescence{"CompareIridescence/CompareIridescence.gltf"};
-    inline constexpr ModelPath CompareMetallic{"CompareMetallic/CompareMetallic.gltf"};
-    inline constexpr ModelPath CompareNormal{"CompareNormal/CompareNormal.gltf"};
-    inline constexpr ModelPath CompareRoughness{"CompareRoughness/CompareRoughness.gltf"};
-    inline constexpr ModelPath CompareSheen{"CompareSheen/CompareSheen.gltf"};
-    inline constexpr ModelPath CompareSpecular{"CompareSpecular/CompareSpecular.gltf"};
-    inline constexpr ModelPath CompareTransmission{"CompareTransmission/CompareTransmission.gltf"};
-    inline constexpr ModelPath CompareVolume{"CompareVolume/CompareVolume.gltf"};
-    inline constexpr ModelPath Corset{"Corset/Corset.gltf"};
-    inline constexpr ModelPath Cube{"Cube/Cube.gltf"};
-    inline constexpr ModelPath CubeVisibility{"CubeVisibility/CubeVisibility.gltf"};
-    inline constexpr ModelPath DamagedHelmet{"DamagedHelmet/DamagedHelmet.gltf"};
-    inline constexpr ModelPath DiffuseTransmissionPlant{"DiffuseTransmissionPlant/DiffuseTransmissionPlant.gltf"};
-    inline constexpr ModelPath DiffuseTransmissionTeacup{"DiffuseTransmissionTeacup/DiffuseTransmissionTeacup.gltf"};
-    inline constexpr ModelPath DiffuseTransmissionTest{"DiffuseTransmissionTest/DiffuseTransmissionTest.gltf"};
-    inline constexpr ModelPath DirectionalLight{"DirectionalLight/DirectionalLight.gltf"};
-    inline constexpr ModelPath DispersionTest{"DispersionTest/DispersionTest.gltf"};
-    inline constexpr ModelPath DragonAttenuation{"DragonAttenuation/DragonAttenuation.gltf"};
-    inline constexpr ModelPath DragonDispersion{"DragonDispersion/DragonDispersion.gltf"};
-    inline constexpr ModelPath Duck{"Duck/Duck.gltf"};
-    inline constexpr ModelPath EmissiveStrengthTest{"EmissiveStrengthTest/EmissiveStrengthTest.gltf"};
-    inline constexpr ModelPath EnvironmentTest{"EnvironmentTest/EnvironmentTest.gltf"};
-    inline constexpr ModelPath FlightHelmet{"FlightHelmet/FlightHelmet.gltf"};
-    inline constexpr ModelPath Fox{"Fox/Fox.gltf"};
-    inline constexpr ModelPath GlamVelvetSofa{"GlamVelvetSofa/GlamVelvetSofa.gltf"};
-    inline constexpr ModelPath GlassBrokenWindow{"GlassBrokenWindow/GlassBrokenWindow.gltf"};
-    inline constexpr ModelPath GlassHurricaneCandleHolder{"GlassHurricaneCandleHolder/GlassHurricaneCandleHolder.gltf"};
-    inline constexpr ModelPath GlassVaseFlowers{"GlassVaseFlowers/GlassVaseFlowers.gltf"};
-    inline constexpr ModelPath IORTestGrid{"IORTestGrid/IORTestGrid.gltf"};
-    inline constexpr ModelPath InterpolationTest{"InterpolationTest/InterpolationTest.gltf"};
-    inline constexpr ModelPath IridescenceAbalone{"IridescenceAbalone/IridescenceAbalone.gltf"};
-    inline constexpr ModelPath IridescenceDielectricSpheres{"IridescenceDielectricSpheres/IridescenceDielectricSpheres.gltf"};
-    inline constexpr ModelPath IridescenceLamp{"IridescenceLamp/IridescenceLamp.gltf"};
-    inline constexpr ModelPath IridescenceMetallicSpheres{"IridescenceMetallicSpheres/IridescenceMetallicSpheres.gltf"};
-    inline constexpr ModelPath IridescenceSuzanne{"IridescenceSuzanne/IridescenceSuzanne.gltf"};
-    inline constexpr ModelPath IridescentDishWithOlives{"IridescentDishWithOlives/IridescentDishWithOlives.gltf"};
-    inline constexpr ModelPath Lantern{"Lantern/Lantern.gltf"};
-    inline constexpr ModelPath LightVisibility{"LightVisibility/LightVisibility.gltf"};
-    inline constexpr ModelPath LightsPunctualLamp{"LightsPunctualLamp/LightsPunctualLamp.gltf"};
-    inline constexpr ModelPath MandarinOrange{"MandarinOrange/MandarinOrange.gltf"};
-    inline constexpr ModelPath MaterialsVariantsShoe{"MaterialsVariantsShoe/MaterialsVariantsShoe.gltf"};
-    inline constexpr ModelPath MeshPrimitiveModes{"MeshPrimitiveModes/MeshPrimitiveModes.gltf"};
-    inline constexpr ModelPath MeshoptCubeTest{"MeshoptCubeTest/MeshoptCubeTest.gltf"};
-    inline constexpr ModelPath MetalRoughSpheres{"MetalRoughSpheres/MetalRoughSpheres.gltf"};
-    inline constexpr ModelPath MetalRoughSpheresNoTextures{"MetalRoughSpheresNoTextures/MetalRoughSpheresNoTextures.gltf"};
-    inline constexpr ModelPath MorphPrimitivesTest{"MorphPrimitivesTest/MorphPrimitivesTest.gltf"};
-    inline constexpr ModelPath MorphStressTest{"MorphStressTest/MorphStressTest.gltf"};
-    inline constexpr ModelPath MosquitoInAmber{"MosquitoInAmber/MosquitoInAmber.gltf"};
-    inline constexpr ModelPath MultiUVTest{"MultiUVTest/MultiUVTest.gltf"};
-    inline constexpr ModelPath MultipleScenes{"MultipleScenes/MultipleScenes.gltf"};
-    inline constexpr ModelPath NegativeScaleTest{"NegativeScaleTest/NegativeScaleTest.gltf"};
-    inline constexpr ModelPath NodePerformanceTest{"NodePerformanceTest/NodePerformanceTest.gltf"};
-    inline constexpr ModelPath NodeVisibilityTest{"NodeVisibilityTest/NodeVisibilityTest.gltf"};
-    inline constexpr ModelPath NormalTangentMirrorTest{"NormalTangentMirrorTest/NormalTangentMirrorTest.gltf"};
-    inline constexpr ModelPath NormalTangentTest{"NormalTangentTest/NormalTangentTest.gltf"};
-    inline constexpr ModelPath OrientationTest{"OrientationTest/OrientationTest.gltf"};
-    inline constexpr ModelPath PlaysetLightTest{"PlaysetLightTest/PlaysetLightTest.gltf"};
-    inline constexpr ModelPath PointLightIntensityTest{"PointLightIntensityTest/PointLightIntensityTest.gltf"};
-    inline constexpr ModelPath PotOfCoals{"PotOfCoals/PotOfCoals.gltf"};
-    inline constexpr ModelPath PotOfCoalsAnimationPointer{"PotOfCoalsAnimationPointer/PotOfCoalsAnimationPointer.gltf"};
-    inline constexpr ModelPath PrimitiveModeNormalsTest{"PrimitiveModeNormalsTest/PrimitiveModeNormalsTest.gltf"};
-    inline constexpr ModelPath RecursiveSkeletons{"RecursiveSkeletons/RecursiveSkeletons.gltf"};
-    inline constexpr ModelPath RiggedFigure{"RiggedFigure/RiggedFigure.gltf"};
-    inline constexpr ModelPath RiggedSimple{"RiggedSimple/RiggedSimple.gltf"};
-    inline constexpr ModelPath ScatteringSkull{"ScatteringSkull/ScatteringSkull.gltf"};
-    inline constexpr ModelPath SciFiHelmet{"SciFiHelmet/SciFiHelmet.gltf"};
-    inline constexpr ModelPath SheenChair{"SheenChair/SheenChair.gltf"};
-    inline constexpr ModelPath SheenCloth{"SheenCloth/SheenCloth.gltf"};
-    inline constexpr ModelPath SheenTestGrid{"SheenTestGrid/SheenTestGrid.gltf"};
-    inline constexpr ModelPath SheenWoodLeatherSofa{"SheenWoodLeatherSofa/SheenWoodLeatherSofa.gltf"};
-    inline constexpr ModelPath SimpleInstancing{"SimpleInstancing/SimpleInstancing.gltf"};
-    inline constexpr ModelPath SimpleMaterial{"SimpleMaterial/SimpleMaterial.gltf"};
-    inline constexpr ModelPath SimpleMeshes{"SimpleMeshes/SimpleMeshes.gltf"};
-    inline constexpr ModelPath SimpleMorph{"SimpleMorph/SimpleMorph.gltf"};
-    inline constexpr ModelPath SimpleSkin{"SimpleSkin/SimpleSkin.gltf"};
-    inline constexpr ModelPath SimpleSparseAccessor{"SimpleSparseAccessor/SimpleSparseAccessor.gltf"};
-    inline constexpr ModelPath SimpleTexture{"SimpleTexture/SimpleTexture.gltf"};
-    inline constexpr ModelPath SpecGlossVsMetalRough{"SpecGlossVsMetalRough/SpecGlossVsMetalRough.gltf"};
-    inline constexpr ModelPath SpecularSilkPouf{"SpecularSilkPouf/SpecularSilkPouf.gltf"};
-    inline constexpr ModelPath SpecularTest{"SpecularTest/SpecularTest.gltf"};
-    inline constexpr ModelPath Sponza{"Sponza/Sponza.gltf"};
-    inline constexpr ModelPath StainedGlassLamp{"StainedGlassLamp/StainedGlassLamp.gltf"};
-    inline constexpr ModelPath SunglassesKhronos{"SunglassesKhronos/SunglassesKhronos.gltf"};
-    inline constexpr ModelPath Suzanne{"Suzanne/Suzanne.gltf"};
-    inline constexpr ModelPath TextureCoordinateTest{"TextureCoordinateTest/TextureCoordinateTest.gltf"};
-    inline constexpr ModelPath TextureEncodingTest{"TextureEncodingTest/TextureEncodingTest.gltf"};
-    inline constexpr ModelPath TextureLinearInterpolationTest{"TextureLinearInterpolationTest/TextureLinearInterpolationTest.gltf"};
-    inline constexpr ModelPath TextureSettingsTest{"TextureSettingsTest/TextureSettingsTest.gltf"};
-    inline constexpr ModelPath TextureTransformMultiTest{"TextureTransformMultiTest/TextureTransformMultiTest.gltf"};
-    inline constexpr ModelPath TextureTransformTest{"TextureTransformTest/TextureTransformTest.gltf"};
-    inline constexpr ModelPath ToyCar{"ToyCar/ToyCar.gltf"};
-    inline constexpr ModelPath TrafficCone{"TrafficCone/TrafficCone.gltf"};
-    inline constexpr ModelPath TransmissionOrderTest{"TransmissionOrderTest/TransmissionOrderTest.gltf"};
-    inline constexpr ModelPath TransmissionRoughnessTest{"TransmissionRoughnessTest/TransmissionRoughnessTest.gltf"};
-    inline constexpr ModelPath TransmissionTest{"TransmissionTest/TransmissionTest.gltf"};
-    inline constexpr ModelPath TransmissionThinwallTestGrid{"TransmissionThinwallTestGrid/TransmissionThinwallTestGrid.gltf"};
-    inline constexpr ModelPath Triangle{"Triangle/Triangle.gltf"};
-    inline constexpr ModelPath TriangleWithoutIndices{"TriangleWithoutIndices/TriangleWithoutIndices.gltf"};
-    inline constexpr ModelPath TwoSidedPlane{"TwoSidedPlane/TwoSidedPlane.gltf"};
-    inline constexpr ModelPath USDShaderBallForGltf{"USDShaderBallForGltf/USDShaderBallForGltf.gltf"};
-    inline constexpr ModelPath Unicode______Test{"Unicode❤♻Test/Unicode❤♻Test.gltf"};
-    inline constexpr ModelPath UnlitTest{"UnlitTest/UnlitTest.gltf"};
-    inline constexpr ModelPath VertexColorTest{"VertexColorTest/VertexColorTest.gltf"};
-    inline constexpr ModelPath VirtualCity{"VirtualCity/VirtualCity.gltf"};
-    inline constexpr ModelPath WaterBottle{"WaterBottle/WaterBottle.gltf"};
-    inline constexpr ModelPath XmpMetadataRoundedCube{"XmpMetadataRoundedCube/XmpMetadataRoundedCube.gltf"};
+inline constexpr ModelPath ABeautifulGame{"ABeautifulGame/ABeautifulGame.gltf"};
+inline constexpr ModelPath AlphaBlendModeTest{
+    "AlphaBlendModeTest/AlphaBlendModeTest.gltf"};
+inline constexpr ModelPath AnimatedColorsCube{
+    "AnimatedColorsCube/AnimatedColorsCube.gltf"};
+inline constexpr ModelPath AnimatedCube{"AnimatedCube/AnimatedCube.gltf"};
+inline constexpr ModelPath AnimatedMorphCube{
+    "AnimatedMorphCube/AnimatedMorphCube.gltf"};
+inline constexpr ModelPath AnimatedTriangle{
+    "AnimatedTriangle/AnimatedTriangle.gltf"};
+inline constexpr ModelPath AnimationPointerUVs{
+    "AnimationPointerUVs/AnimationPointerUVs.gltf"};
+inline constexpr ModelPath AnisotropyBarnLamp{
+    "AnisotropyBarnLamp/AnisotropyBarnLamp.gltf"};
+inline constexpr ModelPath AnisotropyDiscTest{
+    "AnisotropyDiscTest/AnisotropyDiscTest.gltf"};
+inline constexpr ModelPath AnisotropyRotationTest{
+    "AnisotropyRotationTest/AnisotropyRotationTest.gltf"};
+inline constexpr ModelPath AnisotropyStrengthTest{
+    "AnisotropyStrengthTest/AnisotropyStrengthTest.gltf"};
+inline constexpr ModelPath AntiqueCamera{"AntiqueCamera/AntiqueCamera.gltf"};
+inline constexpr ModelPath AttenuationTest{
+    "AttenuationTest/AttenuationTest.gltf"};
+inline constexpr ModelPath Avocado{"Avocado/Avocado.gltf"};
+inline constexpr ModelPath BarramundiFish{"BarramundiFish/BarramundiFish.gltf"};
+inline constexpr ModelPath BoomBox{"BoomBox/BoomBox.gltf"};
+inline constexpr ModelPath BoomBoxWithAxes{
+    "BoomBoxWithAxes/BoomBoxWithAxes.gltf"};
+inline constexpr ModelPath Box_With_Spaces{
+    "Box With Spaces/Box With Spaces.gltf"};
+inline constexpr ModelPath Box{"Box/Box.gltf"};
+inline constexpr ModelPath BoxAnimated{"BoxAnimated/BoxAnimated.gltf"};
+inline constexpr ModelPath BoxInterleaved{"BoxInterleaved/BoxInterleaved.gltf"};
+inline constexpr ModelPath BoxTextured{"BoxTextured/BoxTextured.gltf"};
+inline constexpr ModelPath BoxTexturedNonPowerOfTwo{
+    "BoxTexturedNonPowerOfTwo/BoxTexturedNonPowerOfTwo.gltf"};
+inline constexpr ModelPath BoxVertexColors{
+    "BoxVertexColors/BoxVertexColors.gltf"};
+inline constexpr ModelPath BrainStem{"BrainStem/BrainStem.gltf"};
+inline constexpr ModelPath Cameras{"Cameras/Cameras.gltf"};
+inline constexpr ModelPath CarConcept{"CarConcept/CarConcept.gltf"};
+inline constexpr ModelPath CarbonFibre{"CarbonFibre/CarbonFibre.gltf"};
+inline constexpr ModelPath CesiumMan{"CesiumMan/CesiumMan.gltf"};
+inline constexpr ModelPath CesiumMilkTruck{
+    "CesiumMilkTruck/CesiumMilkTruck.gltf"};
+inline constexpr ModelPath ChairDamaskPurplegold{
+    "ChairDamaskPurplegold/ChairDamaskPurplegold.gltf"};
+inline constexpr ModelPath ChronographWatch{
+    "ChronographWatch/ChronographWatch.gltf"};
+inline constexpr ModelPath ClearCoatCarPaint{
+    "ClearCoatCarPaint/ClearCoatCarPaint.gltf"};
+inline constexpr ModelPath ClearCoatTest{"ClearCoatTest/ClearCoatTest.gltf"};
+inline constexpr ModelPath ClearcoatWicker{
+    "ClearcoatWicker/ClearcoatWicker.gltf"};
+inline constexpr ModelPath CommercialRefrigerator{
+    "CommercialRefrigerator/CommercialRefrigerator.gltf"};
+inline constexpr ModelPath CompareAlphaCoverage{
+    "CompareAlphaCoverage/CompareAlphaCoverage.gltf"};
+inline constexpr ModelPath CompareAmbientOcclusion{
+    "CompareAmbientOcclusion/CompareAmbientOcclusion.gltf"};
+inline constexpr ModelPath CompareAnisotropy{
+    "CompareAnisotropy/CompareAnisotropy.gltf"};
+inline constexpr ModelPath CompareBaseColor{
+    "CompareBaseColor/CompareBaseColor.gltf"};
+inline constexpr ModelPath CompareClearcoat{
+    "CompareClearcoat/CompareClearcoat.gltf"};
+inline constexpr ModelPath CompareDispersion{
+    "CompareDispersion/CompareDispersion.gltf"};
+inline constexpr ModelPath CompareEmissiveStrength{
+    "CompareEmissiveStrength/CompareEmissiveStrength.gltf"};
+inline constexpr ModelPath CompareIor{"CompareIor/CompareIor.gltf"};
+inline constexpr ModelPath CompareIridescence{
+    "CompareIridescence/CompareIridescence.gltf"};
+inline constexpr ModelPath CompareMetallic{
+    "CompareMetallic/CompareMetallic.gltf"};
+inline constexpr ModelPath CompareNormal{"CompareNormal/CompareNormal.gltf"};
+inline constexpr ModelPath CompareRoughness{
+    "CompareRoughness/CompareRoughness.gltf"};
+inline constexpr ModelPath CompareSheen{"CompareSheen/CompareSheen.gltf"};
+inline constexpr ModelPath CompareSpecular{
+    "CompareSpecular/CompareSpecular.gltf"};
+inline constexpr ModelPath CompareTransmission{
+    "CompareTransmission/CompareTransmission.gltf"};
+inline constexpr ModelPath CompareVolume{"CompareVolume/CompareVolume.gltf"};
+inline constexpr ModelPath Corset{"Corset/Corset.gltf"};
+inline constexpr ModelPath Cube{"Cube/Cube.gltf"};
+inline constexpr ModelPath CubeVisibility{"CubeVisibility/CubeVisibility.gltf"};
+inline constexpr ModelPath DamagedHelmet{"DamagedHelmet/DamagedHelmet.gltf"};
+inline constexpr ModelPath DiffuseTransmissionPlant{
+    "DiffuseTransmissionPlant/DiffuseTransmissionPlant.gltf"};
+inline constexpr ModelPath DiffuseTransmissionTeacup{
+    "DiffuseTransmissionTeacup/DiffuseTransmissionTeacup.gltf"};
+inline constexpr ModelPath DiffuseTransmissionTest{
+    "DiffuseTransmissionTest/DiffuseTransmissionTest.gltf"};
+inline constexpr ModelPath DirectionalLight{
+    "DirectionalLight/DirectionalLight.gltf"};
+inline constexpr ModelPath DispersionTest{"DispersionTest/DispersionTest.gltf"};
+inline constexpr ModelPath DragonAttenuation{
+    "DragonAttenuation/DragonAttenuation.gltf"};
+inline constexpr ModelPath DragonDispersion{
+    "DragonDispersion/DragonDispersion.gltf"};
+inline constexpr ModelPath Duck{"Duck/Duck.gltf"};
+inline constexpr ModelPath EmissiveStrengthTest{
+    "EmissiveStrengthTest/EmissiveStrengthTest.gltf"};
+inline constexpr ModelPath EnvironmentTest{
+    "EnvironmentTest/EnvironmentTest.gltf"};
+inline constexpr ModelPath FlightHelmet{"FlightHelmet/FlightHelmet.gltf"};
+inline constexpr ModelPath Fox{"Fox/Fox.gltf"};
+inline constexpr ModelPath GlamVelvetSofa{"GlamVelvetSofa/GlamVelvetSofa.gltf"};
+inline constexpr ModelPath GlassBrokenWindow{
+    "GlassBrokenWindow/GlassBrokenWindow.gltf"};
+inline constexpr ModelPath GlassHurricaneCandleHolder{
+    "GlassHurricaneCandleHolder/GlassHurricaneCandleHolder.gltf"};
+inline constexpr ModelPath GlassVaseFlowers{
+    "GlassVaseFlowers/GlassVaseFlowers.gltf"};
+inline constexpr ModelPath IORTestGrid{"IORTestGrid/IORTestGrid.gltf"};
+inline constexpr ModelPath InterpolationTest{
+    "InterpolationTest/InterpolationTest.gltf"};
+inline constexpr ModelPath IridescenceAbalone{
+    "IridescenceAbalone/IridescenceAbalone.gltf"};
+inline constexpr ModelPath IridescenceDielectricSpheres{
+    "IridescenceDielectricSpheres/IridescenceDielectricSpheres.gltf"};
+inline constexpr ModelPath IridescenceLamp{
+    "IridescenceLamp/IridescenceLamp.gltf"};
+inline constexpr ModelPath IridescenceMetallicSpheres{
+    "IridescenceMetallicSpheres/IridescenceMetallicSpheres.gltf"};
+inline constexpr ModelPath IridescenceSuzanne{
+    "IridescenceSuzanne/IridescenceSuzanne.gltf"};
+inline constexpr ModelPath IridescentDishWithOlives{
+    "IridescentDishWithOlives/IridescentDishWithOlives.gltf"};
+inline constexpr ModelPath Lantern{"Lantern/Lantern.gltf"};
+inline constexpr ModelPath LightVisibility{
+    "LightVisibility/LightVisibility.gltf"};
+inline constexpr ModelPath LightsPunctualLamp{
+    "LightsPunctualLamp/LightsPunctualLamp.gltf"};
+inline constexpr ModelPath MandarinOrange{"MandarinOrange/MandarinOrange.gltf"};
+inline constexpr ModelPath MaterialsVariantsShoe{
+    "MaterialsVariantsShoe/MaterialsVariantsShoe.gltf"};
+inline constexpr ModelPath MeshPrimitiveModes{
+    "MeshPrimitiveModes/MeshPrimitiveModes.gltf"};
+inline constexpr ModelPath MeshoptCubeTest{
+    "MeshoptCubeTest/MeshoptCubeTest.gltf"};
+inline constexpr ModelPath MetalRoughSpheres{
+    "MetalRoughSpheres/MetalRoughSpheres.gltf"};
+inline constexpr ModelPath MetalRoughSpheresNoTextures{
+    "MetalRoughSpheresNoTextures/MetalRoughSpheresNoTextures.gltf"};
+inline constexpr ModelPath MorphPrimitivesTest{
+    "MorphPrimitivesTest/MorphPrimitivesTest.gltf"};
+inline constexpr ModelPath MorphStressTest{
+    "MorphStressTest/MorphStressTest.gltf"};
+inline constexpr ModelPath MosquitoInAmber{
+    "MosquitoInAmber/MosquitoInAmber.gltf"};
+inline constexpr ModelPath MultiUVTest{"MultiUVTest/MultiUVTest.gltf"};
+inline constexpr ModelPath MultipleScenes{"MultipleScenes/MultipleScenes.gltf"};
+inline constexpr ModelPath NegativeScaleTest{
+    "NegativeScaleTest/NegativeScaleTest.gltf"};
+inline constexpr ModelPath NodePerformanceTest{
+    "NodePerformanceTest/NodePerformanceTest.gltf"};
+inline constexpr ModelPath NodeVisibilityTest{
+    "NodeVisibilityTest/NodeVisibilityTest.gltf"};
+inline constexpr ModelPath NormalTangentMirrorTest{
+    "NormalTangentMirrorTest/NormalTangentMirrorTest.gltf"};
+inline constexpr ModelPath NormalTangentTest{
+    "NormalTangentTest/NormalTangentTest.gltf"};
+inline constexpr ModelPath OrientationTest{
+    "OrientationTest/OrientationTest.gltf"};
+inline constexpr ModelPath PlaysetLightTest{
+    "PlaysetLightTest/PlaysetLightTest.gltf"};
+inline constexpr ModelPath PointLightIntensityTest{
+    "PointLightIntensityTest/PointLightIntensityTest.gltf"};
+inline constexpr ModelPath PotOfCoals{"PotOfCoals/PotOfCoals.gltf"};
+inline constexpr ModelPath PotOfCoalsAnimationPointer{
+    "PotOfCoalsAnimationPointer/PotOfCoalsAnimationPointer.gltf"};
+inline constexpr ModelPath PrimitiveModeNormalsTest{
+    "PrimitiveModeNormalsTest/PrimitiveModeNormalsTest.gltf"};
+inline constexpr ModelPath RecursiveSkeletons{
+    "RecursiveSkeletons/RecursiveSkeletons.gltf"};
+inline constexpr ModelPath RiggedFigure{"RiggedFigure/RiggedFigure.gltf"};
+inline constexpr ModelPath RiggedSimple{"RiggedSimple/RiggedSimple.gltf"};
+inline constexpr ModelPath ScatteringSkull{
+    "ScatteringSkull/ScatteringSkull.gltf"};
+inline constexpr ModelPath SciFiHelmet{"SciFiHelmet/SciFiHelmet.gltf"};
+inline constexpr ModelPath SheenChair{"SheenChair/SheenChair.gltf"};
+inline constexpr ModelPath SheenCloth{"SheenCloth/SheenCloth.gltf"};
+inline constexpr ModelPath SheenTestGrid{"SheenTestGrid/SheenTestGrid.gltf"};
+inline constexpr ModelPath SheenWoodLeatherSofa{
+    "SheenWoodLeatherSofa/SheenWoodLeatherSofa.gltf"};
+inline constexpr ModelPath SimpleInstancing{
+    "SimpleInstancing/SimpleInstancing.gltf"};
+inline constexpr ModelPath SimpleMaterial{"SimpleMaterial/SimpleMaterial.gltf"};
+inline constexpr ModelPath SimpleMeshes{"SimpleMeshes/SimpleMeshes.gltf"};
+inline constexpr ModelPath SimpleMorph{"SimpleMorph/SimpleMorph.gltf"};
+inline constexpr ModelPath SimpleSkin{"SimpleSkin/SimpleSkin.gltf"};
+inline constexpr ModelPath SimpleSparseAccessor{
+    "SimpleSparseAccessor/SimpleSparseAccessor.gltf"};
+inline constexpr ModelPath SimpleTexture{"SimpleTexture/SimpleTexture.gltf"};
+inline constexpr ModelPath SpecGlossVsMetalRough{
+    "SpecGlossVsMetalRough/SpecGlossVsMetalRough.gltf"};
+inline constexpr ModelPath SpecularSilkPouf{
+    "SpecularSilkPouf/SpecularSilkPouf.gltf"};
+inline constexpr ModelPath SpecularTest{"SpecularTest/SpecularTest.gltf"};
+inline constexpr ModelPath Sponza{"Sponza/Sponza.gltf"};
+inline constexpr ModelPath StainedGlassLamp{
+    "StainedGlassLamp/StainedGlassLamp.gltf"};
+inline constexpr ModelPath SunglassesKhronos{
+    "SunglassesKhronos/SunglassesKhronos.gltf"};
+inline constexpr ModelPath Suzanne{"Suzanne/Suzanne.gltf"};
+inline constexpr ModelPath TextureCoordinateTest{
+    "TextureCoordinateTest/TextureCoordinateTest.gltf"};
+inline constexpr ModelPath TextureEncodingTest{
+    "TextureEncodingTest/TextureEncodingTest.gltf"};
+inline constexpr ModelPath TextureLinearInterpolationTest{
+    "TextureLinearInterpolationTest/TextureLinearInterpolationTest.gltf"};
+inline constexpr ModelPath TextureSettingsTest{
+    "TextureSettingsTest/TextureSettingsTest.gltf"};
+inline constexpr ModelPath TextureTransformMultiTest{
+    "TextureTransformMultiTest/TextureTransformMultiTest.gltf"};
+inline constexpr ModelPath TextureTransformTest{
+    "TextureTransformTest/TextureTransformTest.gltf"};
+inline constexpr ModelPath ToyCar{"ToyCar/ToyCar.gltf"};
+inline constexpr ModelPath TrafficCone{"TrafficCone/TrafficCone.gltf"};
+inline constexpr ModelPath TransmissionOrderTest{
+    "TransmissionOrderTest/TransmissionOrderTest.gltf"};
+inline constexpr ModelPath TransmissionRoughnessTest{
+    "TransmissionRoughnessTest/TransmissionRoughnessTest.gltf"};
+inline constexpr ModelPath TransmissionTest{
+    "TransmissionTest/TransmissionTest.gltf"};
+inline constexpr ModelPath TransmissionThinwallTestGrid{
+    "TransmissionThinwallTestGrid/TransmissionThinwallTestGrid.gltf"};
+inline constexpr ModelPath Triangle{"Triangle/Triangle.gltf"};
+inline constexpr ModelPath TriangleWithoutIndices{
+    "TriangleWithoutIndices/TriangleWithoutIndices.gltf"};
+inline constexpr ModelPath TwoSidedPlane{"TwoSidedPlane/TwoSidedPlane.gltf"};
+inline constexpr ModelPath USDShaderBallForGltf{
+    "USDShaderBallForGltf/USDShaderBallForGltf.gltf"};
+inline constexpr ModelPath Unicode______Test
+    {"Unicode❤♻Test/Unicode❤♻Test.gltf"};
+inline constexpr ModelPath UnlitTest{"UnlitTest/UnlitTest.gltf"};
+inline constexpr ModelPath VertexColorTest{
+    "VertexColorTest/VertexColorTest.gltf"};
+inline constexpr ModelPath VirtualCity{"VirtualCity/VirtualCity.gltf"};
+inline constexpr ModelPath WaterBottle{"WaterBottle/WaterBottle.gltf"};
+inline constexpr ModelPath XmpMetadataRoundedCube{
+    "XmpMetadataRoundedCube/XmpMetadataRoundedCube.gltf"};
 
-    inline constexpr std::size_t count = 150;
-    inline constexpr std::array all{ABeautifulGame, AlphaBlendModeTest, AnimatedColorsCube, AnimatedCube, AnimatedMorphCube, AnimatedTriangle, AnimationPointerUVs, AnisotropyBarnLamp, AnisotropyDiscTest, AnisotropyRotationTest, AnisotropyStrengthTest, AntiqueCamera, AttenuationTest, Avocado, BarramundiFish, BoomBox, BoomBoxWithAxes, Box_With_Spaces, Box, BoxAnimated, BoxInterleaved, BoxTextured, BoxTexturedNonPowerOfTwo, BoxVertexColors, BrainStem, Cameras, CarConcept, CarbonFibre, CesiumMan, CesiumMilkTruck, ChairDamaskPurplegold, ChronographWatch, ClearCoatCarPaint, ClearCoatTest, ClearcoatWicker, CommercialRefrigerator, CompareAlphaCoverage, CompareAmbientOcclusion, CompareAnisotropy, CompareBaseColor, CompareClearcoat, CompareDispersion, CompareEmissiveStrength, CompareIor, CompareIridescence, CompareMetallic, CompareNormal, CompareRoughness, CompareSheen, CompareSpecular, CompareTransmission, CompareVolume, Corset, Cube, CubeVisibility, DamagedHelmet, DiffuseTransmissionPlant, DiffuseTransmissionTeacup, DiffuseTransmissionTest, DirectionalLight, DispersionTest, DragonAttenuation, DragonDispersion, Duck, EmissiveStrengthTest, EnvironmentTest, FlightHelmet, Fox, GlamVelvetSofa, GlassBrokenWindow, GlassHurricaneCandleHolder, GlassVaseFlowers, IORTestGrid, InterpolationTest, IridescenceAbalone, IridescenceDielectricSpheres, IridescenceLamp, IridescenceMetallicSpheres, IridescenceSuzanne, IridescentDishWithOlives, Lantern, LightVisibility, LightsPunctualLamp, MandarinOrange, MaterialsVariantsShoe, MeshPrimitiveModes, MeshoptCubeTest, MetalRoughSpheres, MetalRoughSpheresNoTextures, MorphPrimitivesTest, MorphStressTest, MosquitoInAmber, MultiUVTest, MultipleScenes, NegativeScaleTest, NodePerformanceTest, NodeVisibilityTest, NormalTangentMirrorTest, NormalTangentTest, OrientationTest, PlaysetLightTest, PointLightIntensityTest, PotOfCoals, PotOfCoalsAnimationPointer, PrimitiveModeNormalsTest, RecursiveSkeletons, RiggedFigure, RiggedSimple, ScatteringSkull, SciFiHelmet, SheenChair, SheenCloth, SheenTestGrid, SheenWoodLeatherSofa, SimpleInstancing, SimpleMaterial, SimpleMeshes, SimpleMorph, SimpleSkin, SimpleSparseAccessor, SimpleTexture, SpecGlossVsMetalRough, SpecularSilkPouf, SpecularTest, Sponza, StainedGlassLamp, SunglassesKhronos, Suzanne, TextureCoordinateTest, TextureEncodingTest, TextureLinearInterpolationTest, TextureSettingsTest, TextureTransformMultiTest, TextureTransformTest, ToyCar, TrafficCone, TransmissionOrderTest, TransmissionRoughnessTest, TransmissionTest, TransmissionThinwallTestGrid, Triangle, TriangleWithoutIndices, TwoSidedPlane, USDShaderBallForGltf, Unicode______Test, UnlitTest, VertexColorTest, VirtualCity, WaterBottle, XmpMetadataRoundedCube};
+inline constexpr std::size_t count = 150;
+inline constexpr std::array all{ABeautifulGame, AlphaBlendModeTest,
+                                AnimatedColorsCube, AnimatedCube,
+                                AnimatedMorphCube, AnimatedTriangle,
+                                AnimationPointerUVs, AnisotropyBarnLamp,
+                                AnisotropyDiscTest, AnisotropyRotationTest,
+                                AnisotropyStrengthTest, AntiqueCamera,
+                                AttenuationTest, Avocado, BarramundiFish,
+                                BoomBox, BoomBoxWithAxes, Box_With_Spaces, Box,
+                                BoxAnimated, BoxInterleaved, BoxTextured,
+                                BoxTexturedNonPowerOfTwo, BoxVertexColors,
+                                BrainStem, Cameras, CarConcept, CarbonFibre,
+                                CesiumMan, CesiumMilkTruck,
+                                ChairDamaskPurplegold, ChronographWatch,
+                                ClearCoatCarPaint, ClearCoatTest,
+                                ClearcoatWicker, CommercialRefrigerator,
+                                CompareAlphaCoverage, CompareAmbientOcclusion,
+                                CompareAnisotropy, CompareBaseColor,
+                                CompareClearcoat, CompareDispersion,
+                                CompareEmissiveStrength, CompareIor,
+                                CompareIridescence, CompareMetallic,
+                                CompareNormal, CompareRoughness, CompareSheen,
+                                CompareSpecular, CompareTransmission,
+                                CompareVolume, Corset, Cube, CubeVisibility,
+                                DamagedHelmet, DiffuseTransmissionPlant,
+                                DiffuseTransmissionTeacup,
+                                DiffuseTransmissionTest, DirectionalLight,
+                                DispersionTest, DragonAttenuation,
+                                DragonDispersion, Duck, EmissiveStrengthTest,
+                                EnvironmentTest, FlightHelmet, Fox,
+                                GlamVelvetSofa, GlassBrokenWindow,
+                                GlassHurricaneCandleHolder, GlassVaseFlowers,
+                                IORTestGrid, InterpolationTest,
+                                IridescenceAbalone,
+                                IridescenceDielectricSpheres, IridescenceLamp,
+                                IridescenceMetallicSpheres, IridescenceSuzanne,
+                                IridescentDishWithOlives, Lantern,
+                                LightVisibility, LightsPunctualLamp,
+                                MandarinOrange, MaterialsVariantsShoe,
+                                MeshPrimitiveModes, MeshoptCubeTest,
+                                MetalRoughSpheres, MetalRoughSpheresNoTextures,
+                                MorphPrimitivesTest, MorphStressTest,
+                                MosquitoInAmber, MultiUVTest, MultipleScenes,
+                                NegativeScaleTest, NodePerformanceTest,
+                                NodeVisibilityTest, NormalTangentMirrorTest,
+                                NormalTangentTest, OrientationTest,
+                                PlaysetLightTest, PointLightIntensityTest,
+                                PotOfCoals, PotOfCoalsAnimationPointer,
+                                PrimitiveModeNormalsTest, RecursiveSkeletons,
+                                RiggedFigure, RiggedSimple, ScatteringSkull,
+                                SciFiHelmet, SheenChair, SheenCloth,
+                                SheenTestGrid, SheenWoodLeatherSofa,
+                                SimpleInstancing, SimpleMaterial, SimpleMeshes,
+                                SimpleMorph, SimpleSkin, SimpleSparseAccessor,
+                                SimpleTexture, SpecGlossVsMetalRough,
+                                SpecularSilkPouf, SpecularTest, Sponza,
+                                StainedGlassLamp, SunglassesKhronos, Suzanne,
+                                TextureCoordinateTest, TextureEncodingTest,
+                                TextureLinearInterpolationTest,
+                                TextureSettingsTest, TextureTransformMultiTest,
+                                TextureTransformTest, ToyCar, TrafficCone,
+                                TransmissionOrderTest,
+                                TransmissionRoughnessTest, TransmissionTest,
+                                TransmissionThinwallTestGrid, Triangle,
+                                TriangleWithoutIndices, TwoSidedPlane,
+                                USDShaderBallForGltf, Unicode______Test,
+                                UnlitTest, VertexColorTest, VirtualCity,
+                                WaterBottle, XmpMetadataRoundedCube};
 }

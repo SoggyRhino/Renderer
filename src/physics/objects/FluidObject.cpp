@@ -12,7 +12,8 @@
 static_assert(std::is_same_v<Real, float> &&
               sizeof(Vector3r) == sizeof(glm::vec3) &&
               alignof(Vector3r) == alignof(glm::vec3),
-              "Vector3r and glm::vec3 must be layout-compatible for zero-copy span");
+              "Vector3r and glm::vec3 must be layout-compatible for zero-copy span")
+;
 
 FluidObject::FluidObject(
     SPH::Simulation& sim,

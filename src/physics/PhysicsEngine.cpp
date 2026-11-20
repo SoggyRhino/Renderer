@@ -77,7 +77,8 @@ BoxView PhysicsEngine::Builder::addBox(
     const bool isDynamic,
     const float density) {
   if (!simulation.active) {
-    throw std::logic_error("Cannot add Box after PhysicsEngine::Builder::build()");
+    throw std::logic_error(
+        "Cannot add Box after PhysicsEngine::Builder::build()");
   }
 
   auto box = std::make_unique<Box>(

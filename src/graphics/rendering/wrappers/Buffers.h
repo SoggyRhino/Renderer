@@ -31,10 +31,11 @@ public:
   template <std::ranges::contiguous_range Range>
   explicit Buffer(const Range& data, const GLenum usage = GL_STATIC_DRAW)
     : Buffer(
-          static_cast<GLsizeiptr>(std::ranges::size(data) *
-                                  sizeof(std::ranges::range_value_t<Range>)),
-          std::ranges::data(data),
-          usage) {}
+        static_cast<GLsizeiptr>(std::ranges::size(data) *
+                                sizeof(std::ranges::range_value_t<Range>)),
+        std::ranges::data(data),
+        usage) {
+  }
 
   Buffer(
       const GLenum target,
@@ -51,11 +52,12 @@ public:
       const Range& data,
       const GLenum usage = GL_STATIC_DRAW)
     : Buffer(
-          target,
-          static_cast<GLsizeiptr>(std::ranges::size(data) *
-                                  sizeof(std::ranges::range_value_t<Range>)),
-          std::ranges::data(data),
-          usage) {}
+        target,
+        static_cast<GLsizeiptr>(std::ranges::size(data) *
+                                sizeof(std::ranges::range_value_t<Range>)),
+        std::ranges::data(data),
+        usage) {
+  }
 
   ~Buffer() {
     if (id_ != 0) {
@@ -219,7 +221,8 @@ public:
     glEnableVertexAttribArray(index);
   }
 
-  void drawArrays(const GLenum mode, const GLint first, const GLsizei count) const {
+  void drawArrays(const GLenum mode, const GLint first,
+                  const GLsizei count) const {
     bind();
     glDrawArrays(mode, first, count);
     unbind();

@@ -54,8 +54,10 @@ SPlisHSPlasHTestScene::PhysicsScene SPlisHSPlasHTestScene::buildPhysicsScene() {
       kCubeDensity);
 
   const FluidView water = builder.addFluid(
-      {-kBoxHalfExtent + kFluidMargin, kFluidMargin, -kBoxHalfExtent + kFluidMargin},
-      {kBoxHalfExtent - kFluidMargin, kPoolHeight, kBoxHalfExtent - kFluidMargin});
+      {-kBoxHalfExtent + kFluidMargin, kFluidMargin,
+       -kBoxHalfExtent + kFluidMargin},
+      {kBoxHalfExtent - kFluidMargin, kPoolHeight,
+       kBoxHalfExtent - kFluidMargin});
 
   return {
       .engine = builder.build(),
@@ -84,18 +86,23 @@ SPlisHSPlasHTestScene::SPlisHSPlasHTestScene(
   glEnable(GL_PROGRAM_POINT_SIZE);
 
   // Position the simulation box in front of the default camera with a slight tilt
-  sceneTransform = glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, -0.75F, -4.0F));
-  sceneTransform = glm::rotate(sceneTransform, glm::radians(20.0F), glm::vec3(1.0F, 0.0F, 0.0F));
-  sceneTransform = glm::rotate(sceneTransform, glm::radians(-30.0F), glm::vec3(0.0F, 1.0F, 0.0F));
+  sceneTransform = glm::translate(glm::mat4(1.0F),
+                                  glm::vec3(0.0F, -0.75F, -4.0F));
+  sceneTransform = glm::rotate(sceneTransform, glm::radians(20.0F),
+                               glm::vec3(1.0F, 0.0F, 0.0F));
+  sceneTransform = glm::rotate(sceneTransform, glm::radians(-30.0F),
+                               glm::vec3(0.0F, 1.0F, 0.0F));
 
   particleMesh.upload(physics.water.particles());
 }
 
-void SPlisHSPlasHTestScene::updateInput(const double dt, const InputState& input) {
+void SPlisHSPlasHTestScene::updateInput(const double dt,
+                                        const InputState& input) {
   cameraController.update(dt, input);
 }
 
-void SPlisHSPlasHTestScene::handleWindowResize(const int width, const int height) {
+void SPlisHSPlasHTestScene::handleWindowResize(const int width,
+                                               const int height) {
   Scene::handleWindowResize(width, height);
   cameraController.onResize(width, height);
 }
@@ -111,11 +118,13 @@ void SPlisHSPlasHTestScene::update(const double dt) {
 
 void SPlisHSPlasHTestScene::render() const {
   const glm::mat4& view = cameraController.getCamera().getViewMatrix();
-  const glm::mat4& projection = cameraController.getCamera().getProjectionMatrix();
+  const glm::mat4& projection = cameraController.getCamera().
+                                                 getProjectionMatrix();
 
   if (showContainer) {
     for (const BoxView& box : physics.containerBoxes) {
-      containerMaterial.bind(sceneTransform * box.modelMatrix(), view, projection);
+      containerMaterial.bind(sceneTransform * box.modelMatrix(), view,
+                             projection);
       boxMesh.draw();
     }
   }
@@ -124,7 +133,8 @@ void SPlisHSPlasHTestScene::render() const {
   particleMesh.draw();
 
   if (showCube) {
-    cubeMaterial.bind(sceneTransform * physics.cube.modelMatrix(), view, projection);
+    cubeMaterial.bind(sceneTransform * physics.cube.modelMatrix(), view,
+                      projection);
     boxMesh.draw();
   }
 }
@@ -146,6 +156,7 @@ void SPlisHSPlasHTestScene::renderUI() {
   ImGui::SliderFloat("Point Size", &pointSize, 2.0F, 20.0F);
   ImGui::SliderFloat("Time Scale", &timeScale, 0.1F, 2.0F, "%.2fx");
   ImGui::Text("Particles: %zu", physics.water.particleCount());
-  ImGui::Text("Sim Time: %.3f s", static_cast<double>(physics.engine.getSimTime()));
+  ImGui::Text("Sim Time: %.3f s",
+              static_cast<double>(physics.engine.getSimTime()));
   ImGui::End();
 }

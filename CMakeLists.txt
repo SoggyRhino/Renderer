@@ -36,8 +36,8 @@ add_executable(${PROJECT_NAME}
         src/graphics/rendering/wrappers/RenderState.h
         src/graphics/rendering/wrappers/Program.cpp
         src/graphics/rendering/wrappers/Program.h
-        src/graphics/rendering/utils/Camera.cpp
-        src/graphics/rendering/utils/Camera.h
+        src/graphics/rendering/Camera.cpp
+        src/graphics/rendering/Camera.h
         src/scenes/components/CameraController.cpp
         src/scenes/components/CameraController.h
         src/scenes/Scene.h
@@ -50,15 +50,16 @@ add_executable(${PROJECT_NAME}
         src/scenes/tests/AllModelsTestScene.h
         src/scenes/tests/SPlisHSPlasHTestScene.cpp
         src/scenes/tests/SPlisHSPlasHTestScene.h
+        src/graphics/rendering/loader/GltfAsset.h
+        src/graphics/rendering/loader/GltfLoader.cpp
+        src/graphics/rendering/loader/GltfLoader.h
         src/graphics/rendering/materials/GltfMaterial.h
         src/graphics/rendering/materials/ParticleMaterial.h
         src/graphics/rendering/materials/SimpleMaterial.h
         src/graphics/rendering/meshes/BoxMesh.cpp
         src/graphics/rendering/meshes/BoxMesh.h
-        src/graphics/rendering/meshes/Mesh.cpp
-        src/graphics/rendering/meshes/Mesh.h
-        src/graphics/rendering/meshes/Model.cpp
-        src/graphics/rendering/meshes/Model.h
+        src/graphics/rendering/meshes/GLTFMesh.cpp
+        src/graphics/rendering/meshes/GLTFMesh.h
         src/graphics/rendering/meshes/ParticleMesh.cpp
         src/graphics/rendering/meshes/ParticleMesh.h
         src/graphics/rendering/wrappers/Texture.cpp

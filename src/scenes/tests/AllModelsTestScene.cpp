@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "graphics/rendering/loader/GltfLoader.h"
 #include "models.h"
 #include "shaders.h"
 
@@ -42,12 +43,12 @@ bool AllModelsTestScene::loadModel(const size_t index) {
   const std::string& displayName = modelNames[index];
 
   try {
-    model = std::make_unique<Model>(std::string(pathView), program);
+    asset = GltfLoader::load(std::string(pathView), program);
     loadFailed = false;
     statusMessage = std::format("Loaded: {}", displayName);
     return true;
   } catch (const std::exception& e) {
-    model.reset();
+    asset.reset();
     loadFailed = true;
     statusMessage = std::format(
         "Failed to load '{}': {}",
@@ -82,10 +83,13 @@ void AllModelsTestScene::update(const double dt) {
 }
 
 void AllModelsTestScene::render() const {
-  if (model) {
-    for (const auto& [mesh, material] : model->getParts()) {
-      material.bind(rotationMatrix, viewMatrix, projectionMatrix);
-      mesh.draw();
+  if (asset) {
+    for (const auto& [material, instances] : asset->batches) {
+      for (const auto& instance : instances) {
+        material->bind(rotationMatrix * instance.transform, viewMatrix,
+                       projectionMatrix);
+        instance.mesh->draw();
+      }
     }
   }
 }
@@ -164,8 +168,13 @@ void AllModelsTestScene::renderUI() {
         ImVec4(1.0f, 0.4f, 0.4f, 1.0f),
         "%s",
         statusMessage.c_str());
-  } else if (model) {
-    ImGui::TextDisabled("Meshes: %zu", model->getParts().size());
+  } else if (asset) {
+    ImGui::TextDisabled(
+        "Meshes: %zu | Instances: %zu | Materials: %zu | Textures: %zu",
+        asset->meshes.size(),
+        asset->instanceCount(),
+        asset->materials.size(),
+        asset->textures.size());
   }
 
   ImGui::Separator();

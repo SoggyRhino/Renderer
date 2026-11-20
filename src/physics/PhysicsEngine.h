@@ -24,7 +24,10 @@ class PhysicsEngine {
     bool active = false;
 
     SimulationSession() = default;
-    explicit SimulationSession(const bool isActive) : active(isActive) {}
+
+    explicit SimulationSession(const bool isActive) : active(isActive) {
+    }
+
     ~SimulationSession();
 
     SimulationSession(const SimulationSession&) = delete;

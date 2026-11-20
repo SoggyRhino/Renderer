@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shaders.h"
+#include "graphics/rendering/loader/GltfLoader.h"
 #include "graphics/rendering/wrappers/RenderState.h"
 
 GLTFTestScene::GLTFTestScene(
@@ -14,7 +15,7 @@ GLTFTestScene::GLTFTestScene(
                                        windowWidth,
                                        windowHeight),
                                    program(MODEL_VERT, MODEL_FRAG),
-                                   model(filename, program),
+                                   asset(GltfLoader::load(filename, program)),
                                    cameraController(windowWidth, windowHeight) {
   RenderState::apply(
   {
@@ -49,11 +50,14 @@ void GLTFTestScene::update(const double dt) {
 
 void GLTFTestScene::render() const {
   const glm::mat4& view = cameraController.getCamera().getViewMatrix();
-  const glm::mat4& projection = cameraController.getCamera().getProjectionMatrix();
+  const glm::mat4& projection = cameraController.getCamera().
+                                                 getProjectionMatrix();
 
-  for (const auto& [mesh, material] : model.getParts()) {
-    material.bind(rotationMatrix, view, projection);
-    mesh.draw();
+  for (const auto& [material, instances] : asset.batches) {
+    for (const auto& instance : instances) {
+      material->bind(rotationMatrix * instance.transform, view, projection);
+      instance.mesh->draw();
+    }
   }
 }
 

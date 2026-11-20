@@ -86,7 +86,8 @@ SPH::BoundaryModel_Akinci2012& Box::createBoundaryModel(
     const bool isDyn,
     const float particleRadius,
     const float boundarySpacingFactor) {
-  const auto toBoundaryPoint = [isDyn, &pos, &rot](const glm::vec3& localPoint) {
+  const auto toBoundaryPoint = [isDyn, &pos, &rot
+      ](const glm::vec3& localPoint) {
     return toSph(isDyn ? localPoint : (pos + rot * localPoint));
   };
 

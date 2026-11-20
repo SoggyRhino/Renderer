@@ -12,7 +12,9 @@ class FluidObject;
 class BoxView {
 public:
   BoxView() = default;
-  explicit BoxView(const Box& target) : box(&target) {}
+
+  explicit BoxView(const Box& target) : box(&target) {
+  }
 
   [[nodiscard]] bool valid() const { return box != nullptr; }
   [[nodiscard]] explicit operator bool() const { return valid(); }
@@ -29,7 +31,9 @@ private:
 class FluidView {
 public:
   FluidView() = default;
-  explicit FluidView(const FluidObject& target) : fluid(&target) {}
+
+  explicit FluidView(const FluidObject& target) : fluid(&target) {
+  }
 
   [[nodiscard]] bool valid() const { return fluid != nullptr; }
   [[nodiscard]] explicit operator bool() const { return valid(); }

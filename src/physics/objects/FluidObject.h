@@ -21,7 +21,8 @@ public:
       float particleRadius,
       float xsphViscosity = 0.02F);
 
-  void resetPhysics() override {}
+  void resetPhysics() override {
+  }
 
   [[nodiscard]] std::size_t getParticleCount() const;
   [[nodiscard]] glm::vec3 getParticlePosition(std::size_t index) const;

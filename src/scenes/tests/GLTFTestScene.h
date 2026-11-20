@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Scene.h"
-#include "graphics/rendering/meshes/Model.h"
+#include "graphics/rendering/loader/GltfAsset.h"
 #include "graphics/rendering/wrappers/Program.h"
 #include "scenes/components/CameraController.h"
 
@@ -25,7 +25,7 @@ public:
 
 private:
   const Program program;
-  Model model;
+  GltfAsset asset;
   CameraController cameraController;
 
   float speed = 90.0f;

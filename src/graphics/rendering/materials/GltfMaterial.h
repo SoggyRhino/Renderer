@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -8,7 +10,7 @@
 
 struct GltfMaterial {
   const Program& program;
-  const Texture* baseColorTexture = nullptr;
+  std::shared_ptr<const Texture> baseColorTexture;
 
   void bind(
       const glm::mat4& model,
@@ -19,7 +21,8 @@ struct GltfMaterial {
     program.setMatx4fv("view", view);
     program.setMatx4fv("projection", projection);
 
-    const bool hasTex = baseColorTexture != nullptr && baseColorTexture->isValid();
+    const bool hasTex = baseColorTexture != nullptr && baseColorTexture->
+                        isValid();
     program.setBool("hasBaseColor", hasTex);
     if (hasTex) {
       baseColorTexture->bind(0);
