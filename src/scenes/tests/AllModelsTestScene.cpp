@@ -42,7 +42,7 @@ bool AllModelsTestScene::loadModel(const size_t index) {
   const std::string& displayName = modelNames[index];
 
   try {
-    model = std::make_unique<Model>(std::string(pathView));
+    model = std::make_unique<Model>(std::string(pathView), program);
     loadFailed = false;
     statusMessage = std::format("Loaded: {}", displayName);
     return true;
@@ -82,14 +82,11 @@ void AllModelsTestScene::update(const double dt) {
 }
 
 void AllModelsTestScene::render() const {
-  program.use();
-
-  program.setMatx4fv("model", rotationMatrix);
-  program.setMatx4fv("view", viewMatrix);
-  program.setMatx4fv("projection", projectionMatrix);
-
   if (model) {
-    model->draw(program);
+    for (const auto& [mesh, material] : model->getParts()) {
+      material.bind(rotationMatrix, viewMatrix, projectionMatrix);
+      mesh.draw();
+    }
   }
 }
 
@@ -168,7 +165,7 @@ void AllModelsTestScene::renderUI() {
         "%s",
         statusMessage.c_str());
   } else if (model) {
-    ImGui::TextDisabled("Meshes: %zu", model->getMeshes().size());
+    ImGui::TextDisabled("Meshes: %zu", model->getParts().size());
   }
 
   ImGui::Separator();

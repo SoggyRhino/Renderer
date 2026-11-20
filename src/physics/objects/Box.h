@@ -1,12 +1,10 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "graphics/rendering/wrappers/Buffers.h"
 #include "physics/objects/PhysicsObject.h"
 
 namespace SPH {
@@ -17,14 +15,13 @@ class Simulation;
 class Box final : public PhysicsObject {
 public:
   Box(
+      SPH::Simulation& sim,
       const glm::vec3& position,
       const glm::vec3& halfExtents,
+      float particleRadius,
+      float boundarySpacingFactor,
       bool isDynamic = false,
       float density = 1000.0F);
-
-  void render(
-      const Program& program,
-      const glm::mat4& parentTransform = glm::mat4(1.0F)) const override;
 
   [[nodiscard]] bool isDynamic() const override { return dynamic; }
 
@@ -32,9 +29,6 @@ public:
   [[nodiscard]] const glm::quat& getRotation() const { return rotation; }
   [[nodiscard]] const glm::vec3& getHalfExtents() const { return halfExtents; }
 
-protected:
-  void initPhysics(SPH::Simulation& sim, float particleRadius,
-                   float boundarySpacingFactor) override;
   void resetPhysics() override;
   void integrate(float stepDt, const glm::vec3& gravity) override;
   void resolveStaticCollision(const PhysicsObject& staticObject,
@@ -42,14 +36,18 @@ protected:
   void syncBoundaryParticles() override;
 
 private:
-  friend class PhysicsEngine;
-
-  void rebuildMesh();
-  [[nodiscard]] std::vector<glm::vec3> buildBoundaryParticles(
-      float spacing) const;
+  [[nodiscard]] static std::vector<glm::vec3> buildBoundaryParticles(
+      const glm::vec3& halfExtents,
+      float spacing);
+  [[nodiscard]] static SPH::BoundaryModel_Akinci2012& createBoundaryModel(
+      SPH::Simulation& sim,
+      const glm::vec3& position,
+      const glm::quat& rotation,
+      const glm::vec3& halfExtents,
+      bool isDynamic,
+      float particleRadius,
+      float boundarySpacingFactor);
   void computeMassAndInertia();
-  void clampToBounds(const glm::vec3& minCorner, const glm::vec3& maxCorner,
-                     float particleRadius);
 
   glm::vec3 initialPosition{0.0F};
   glm::vec3 position{0.0F};
@@ -63,9 +61,5 @@ private:
   float mass = 1.0F;
   float invInertia = 0.0F;
 
-  SPH::BoundaryModel_Akinci2012* boundaryModel = nullptr;
-
-  VertexArray vao;
-  Buffer vbo;
-  Buffer ebo;
+  SPH::BoundaryModel_Akinci2012& boundaryModel;
 };

@@ -1,19 +1,16 @@
 #pragma once
 
+#include <cstdint>
 #include <optional>
 #include <vector>
+
 #include <glad/glad.h>
 #include "tiny_gltf_v3.h"
 #include "graphics/rendering/wrappers/Buffers.h"
-#include "graphics/rendering/wrappers/Program.h"
-#include "graphics/rendering/wrappers/Texture.h"
 
 class Mesh {
 public:
-  Mesh(
-      const tg3_model& model,
-      const tg3_primitive& prim,
-      const Texture* baseColor = nullptr);
+  Mesh(const tg3_model& model, const tg3_primitive& prim);
   ~Mesh() = default;
 
   Mesh(const Mesh&) = delete;
@@ -22,7 +19,7 @@ public:
   Mesh(Mesh&& other) noexcept = default;
   Mesh& operator=(Mesh&& other) noexcept = default;
 
-  void draw(const Program& program) const;
+  void draw() const;
 
   [[nodiscard]] GLuint getVAO() const {
     return VAO.id();
@@ -46,6 +43,4 @@ private:
   uintptr_t indexOffset = 0;
   GLenum mode = GL_TRIANGLES;
   bool hasIndices = false;
-
-  const Texture* baseColorTexture = nullptr;
 };

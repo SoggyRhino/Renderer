@@ -5,10 +5,12 @@
 #include <glm/glm.hpp>
 
 #include "../Scene.h"
+#include "graphics/rendering/materials/ParticleMaterial.h"
+#include "graphics/rendering/materials/SimpleMaterial.h"
+#include "graphics/rendering/meshes/BoxMesh.h"
+#include "graphics/rendering/meshes/ParticleMesh.h"
 #include "graphics/rendering/wrappers/Program.h"
 #include "physics/PhysicsEngine.h"
-#include "physics/objects/Box.h"
-#include "physics/objects/FluidObject.h"
 #include "scenes/components/CameraController.h"
 
 class SPlisHSPlasHTestScene : public Scene {
@@ -23,18 +25,31 @@ public:
   void renderUI() override;
 
 private:
+  struct PhysicsScene {
+    PhysicsEngine engine;
+    std::array<BoxView, 5> containerBoxes;
+    BoxView cube;
+    FluidView water;
+  };
+
+  static PhysicsScene buildPhysicsScene();
+
   const Program program;
   CameraController cameraController;
 
-  std::array<Box, 5> containerBoxes;
-  Box cube;
-  FluidObject water;
-  PhysicsEngine engine;
+  BoxMesh boxMesh;
+  ParticleMesh particleMesh;
 
-  glm::mat4 sceneTransform{1.0f};
+  SimpleMaterial containerMaterial;
+  SimpleMaterial cubeMaterial;
+  ParticleMaterial waterMaterial;
+
+  PhysicsScene physics;
+
+  glm::mat4 sceneTransform{1.0F};
   bool pausePhysics = true;
   bool showCube = false;
   bool showContainer = false;
-  float pointSize = 8.0f;
-  float timeScale = 1.0f;
+  float pointSize = 8.0F;
+  float timeScale = 1.0F;
 };

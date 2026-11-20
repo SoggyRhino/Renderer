@@ -14,7 +14,7 @@ GLTFTestScene::GLTFTestScene(
                                        windowWidth,
                                        windowHeight),
                                    program(MODEL_VERT, MODEL_FRAG),
-                                   model(Model{filename}),
+                                   model(filename, program),
                                    cameraController(windowWidth, windowHeight) {
   RenderState::apply(
   {
@@ -48,15 +48,13 @@ void GLTFTestScene::update(const double dt) {
 }
 
 void GLTFTestScene::render() const {
-  program.use();
+  const glm::mat4& view = cameraController.getCamera().getViewMatrix();
+  const glm::mat4& projection = cameraController.getCamera().getProjectionMatrix();
 
-  program.setMatx4fv("model", rotationMatrix);
-  program.setMatx4fv("view", cameraController.getCamera().getViewMatrix());
-  program.setMatx4fv(
-      "projection",
-      cameraController.getCamera().getProjectionMatrix());
-
-  model.draw(program);
+  for (const auto& [mesh, material] : model.getParts()) {
+    material.bind(rotationMatrix, view, projection);
+    mesh.draw();
+  }
 }
 
 void GLTFTestScene::renderUI() {

@@ -6,7 +6,7 @@
 
 #include "tiny_gltf_v3.h"
 
-Model::Model(const std::string& filename) {
+Model::Model(const std::string& filename, const Program& program) {
   tg3_parse_options opts;
   tg3_parse_options_init(&opts);
 
@@ -94,16 +94,16 @@ Model::Model(const std::string& filename) {
         }
       }
 
-      meshes.emplace_back(model, prim, baseColorTex);
+      parts.push_back(ModelPart{
+          .mesh = Mesh(model, prim),
+          .material = GltfMaterial{
+              .program = program,
+              .baseColorTexture = baseColorTex,
+          },
+      });
     }
   }
 
   tg3_model_free(&model);
   tg3_error_stack_free(&errors);
-}
-
-void Model::draw(const Program& program) const {
-  for (const auto& mesh : meshes) {
-    mesh.draw(program);
-  }
 }

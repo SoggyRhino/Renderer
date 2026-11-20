@@ -3,8 +3,6 @@
 #include <string>
 #include <unordered_map>
 #include "tiny_gltf_v3.h"
-#include "graphics/rendering/wrappers/Texture.h"
-#include "graphics/rendering/wrappers/Program.h"
 
 namespace {
 const std::unordered_map<std::string, GLuint> kAttributeLocations = {
@@ -29,11 +27,7 @@ GLint getNumComponents(const int32_t tg3Type) {
 }
 }
 
-Mesh::Mesh(
-    const tg3_model& model,
-    const tg3_primitive& prim,
-    const Texture* baseColor)
-  : baseColorTexture(baseColor) {
+Mesh::Mesh(const tg3_model& model, const tg3_primitive& prim) {
   mode = (prim.mode >= 0) ? static_cast<GLenum>(prim.mode) : GL_TRIANGLES;
 
   VAO.bind();
@@ -129,18 +123,9 @@ Mesh::Mesh(
   VAO.unbind();
 }
 
-void Mesh::draw(const Program& program) const {
+void Mesh::draw() const {
   if (count == 0)
     return;
-
-  const bool hasTex = baseColorTexture && baseColorTexture->isValid();
-  if (hasTex) {
-    baseColorTexture->bind(0);
-    program.setBool("hasBaseColor", true);
-    program.setInt("baseColor", 0);
-  } else {
-    program.setBool("hasBaseColor", false);
-  }
 
   if (hasIndices) {
     VAO.drawElements(
@@ -150,9 +135,5 @@ void Mesh::draw(const Program& program) const {
         reinterpret_cast<void*>(indexOffset));
   } else {
     VAO.drawArrays(mode, 0, count);
-  }
-
-  if (hasTex) {
-    baseColorTexture->unbind(0);
   }
 }

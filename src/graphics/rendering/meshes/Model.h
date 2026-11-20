@@ -4,13 +4,19 @@
 #include <string>
 #include <vector>
 
-#include "Mesh.h"
+#include "graphics/rendering/materials/GltfMaterial.h"
+#include "graphics/rendering/meshes/Mesh.h"
 #include "graphics/rendering/wrappers/Program.h"
 #include "graphics/rendering/wrappers/Texture.h"
 
+struct ModelPart {
+  Mesh mesh;
+  GltfMaterial material;
+};
+
 class Model {
 public:
-  explicit Model(const std::string& filename);
+  Model(const std::string& filename, const Program& program);
   ~Model() = default;
 
   Model(const Model&) = delete;
@@ -19,13 +25,12 @@ public:
   Model(Model&&) noexcept = default;
   Model& operator=(Model&&) noexcept = default;
 
-  void draw(const Program& program) const;
-
-  [[nodiscard]] const std::vector<Mesh>& getMeshes() const {
-    return meshes;
+  [[nodiscard]] const std::vector<ModelPart>& getParts() const {
+    return parts;
   }
 
 private:
+
   std::vector<std::unique_ptr<Texture>> textures;
-  std::vector<Mesh> meshes;
+  std::vector<ModelPart> parts;
 };

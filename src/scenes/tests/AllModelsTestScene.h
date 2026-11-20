@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Scene.h"
-#include "graphics/rendering/objects/Model.h"
+#include "graphics/rendering/meshes/Model.h"
 #include "graphics/rendering/wrappers/Program.h"
 #include <glm/glm.hpp>
 #include <memory>

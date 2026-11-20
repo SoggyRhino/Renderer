@@ -50,19 +50,28 @@ add_executable(${PROJECT_NAME}
         src/scenes/tests/AllModelsTestScene.h
         src/scenes/tests/SPlisHSPlasHTestScene.cpp
         src/scenes/tests/SPlisHSPlasHTestScene.h
-        src/graphics/rendering/objects/Mesh.cpp
-        src/graphics/rendering/objects/Mesh.h
-        src/graphics/rendering/objects/Model.cpp
-        src/graphics/rendering/objects/Model.h
+        src/graphics/rendering/materials/GltfMaterial.h
+        src/graphics/rendering/materials/ParticleMaterial.h
+        src/graphics/rendering/materials/SimpleMaterial.h
+        src/graphics/rendering/meshes/BoxMesh.cpp
+        src/graphics/rendering/meshes/BoxMesh.h
+        src/graphics/rendering/meshes/Mesh.cpp
+        src/graphics/rendering/meshes/Mesh.h
+        src/graphics/rendering/meshes/Model.cpp
+        src/graphics/rendering/meshes/Model.h
+        src/graphics/rendering/meshes/ParticleMesh.cpp
+        src/graphics/rendering/meshes/ParticleMesh.h
         src/graphics/rendering/wrappers/Texture.cpp
         src/graphics/rendering/wrappers/Texture.h
 
         lib/tiny_gltf_v3.c
         src/scenes/Scene.cpp
-        src/physics/BoundarySampling.h
+        src/physics/math/BoundarySampling.h
         src/physics/PhysicsEngine.cpp
         src/physics/PhysicsEngine.h
-        src/physics/SphMath.h
+        src/physics/PhysicsViews.cpp
+        src/physics/PhysicsViews.h
+        src/physics/math/SphMath.h
         src/physics/objects/PhysicsObject.h
         src/physics/objects/DynamicRigidBody.h
         src/physics/objects/Box.cpp
